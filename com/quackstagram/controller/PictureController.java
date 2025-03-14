@@ -81,7 +81,7 @@ public class PictureController {
             
             // Create picture object
             Picture picture = new Picture(imageId, username, uploadedImagesPath + imageId + ".png", 
-                                         caption, LocalDateTime.now());
+                                        caption, LocalDateTime.now());
             
             // Save image file
             Path destPath = Paths.get(uploadedImagesPath, imageId + ".png");

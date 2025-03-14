@@ -1,4 +1,3 @@
-// File: com/quackstagram/controller/SessionController.java
 package com.quackstagram.controller;
 
 import com.quackstagram.model.User;
@@ -7,6 +6,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Controller for managing user sessions
@@ -14,12 +15,12 @@ import java.nio.file.Paths;
 public class SessionController {
     private User currentUser;
     private final String usersFilePath = "data/users.txt";
+    private final Map<String, Object> temporaryData = new HashMap<>();
     
     /**
      * Constructor for SessionController
      */
     public SessionController() {
-        // Initialize with no user logged in
         currentUser = null;
     }
     
@@ -31,7 +32,6 @@ public class SessionController {
     public void login(User user) {
         this.currentUser = user;
         try {
-            // Write current user to users.txt
             Files.write(Paths.get(usersFilePath), user.toString().getBytes());
         } catch (IOException e) {
             e.printStackTrace();
@@ -83,5 +83,26 @@ public class SessionController {
             }
         }
         return null;
+    }
+
+        /**
+     * Store a value to be passed between views
+     */
+    public void setTemporaryData(String key, Object value) {
+        temporaryData.put(key, value);
+    }
+
+    /**
+    * Retrieve a value passed between views
+    */
+    public Object getTemporaryData(String key) {
+        return temporaryData.get(key);
+    }
+
+    /**
+     * Remove a temporary value after it's been used
+     */
+    public void removeTemporaryData(String key) {
+        temporaryData.remove(key);
     }
 }

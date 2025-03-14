@@ -22,7 +22,6 @@ public class QuackstagramApp {
      * @param args command line arguments
      */
     public static void main(String[] args) {
-        // Use Swing's event dispatch thread for UI operations
         SwingUtilities.invokeLater(() -> {
             try {
                 // Set look and feel to system default

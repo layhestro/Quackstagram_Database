@@ -26,20 +26,20 @@ public class AuthView extends BaseView {
     private JPanel registerPanel;
     private JTextField txtUsername;
     private JTextField txtPassword;
+    private JTextField txtRegUsername;
+    private JTextField txtRegPassword;
     private JTextField txtBio;
     private JLabel lblPhoto;
     private File selectedProfilePhoto;
     private final String profilePhotoStoragePath = "img/storage/profile/";
+    private CardLayout cardLayout;
+    private JPanel cardPanel;
+    private boolean initialized = false;
     
     /**
      * Constructor for AuthView
-     * 
-     * @param sessionController controller for user session management
-     * @param navigationController controller for view navigation
-     * @param userController controller for user operations
      */
-    public AuthView(SessionController sessionController, NavigationController navigationController,
-                   UserController userController) {
+    public AuthView(SessionController sessionController, NavigationController navigationController, UserController userController) {
         super(sessionController, navigationController);
         this.userController = userController;
         
@@ -49,11 +49,15 @@ public class AuthView extends BaseView {
 
     @Override
     public void initialize() {
+        if (initialized) {
+            return; // Don't reinitialize if already done
+        }
+        
         getContentPane().removeAll();
         
         // Create card layout to switch between login and register
-        CardLayout cardLayout = new CardLayout();
-        JPanel cardPanel = new JPanel(cardLayout);
+        cardLayout = new CardLayout();
+        cardPanel = new JPanel(cardLayout);
         
         // Create login panel
         loginPanel = createLoginPanel();
@@ -69,19 +73,21 @@ public class AuthView extends BaseView {
         // Start with login panel
         cardLayout.show(cardPanel, "login");
         
+        initialized = true;
         revalidate();
         repaint();
     }
 
     @Override
     public void refreshView() {
-        initialize();
+        // Only show card, don't recreate panels
+        if (cardPanel != null && cardLayout != null) {
+            cardLayout.show(cardPanel, "login");
+        }
     }
     
     /**
      * Create the login panel
-     * 
-     * @return a JPanel for login
      */
     private JPanel createLoginPanel() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -95,7 +101,7 @@ public class AuthView extends BaseView {
         fieldsPanel.setLayout(new BoxLayout(fieldsPanel, BoxLayout.Y_AXIS));
         fieldsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
-        // Logo
+        // Logo (same as before)
         JLabel logoLabel = new JLabel();
         logoLabel.setPreferredSize(new Dimension(80, 80));
         logoLabel.setHorizontalAlignment(JLabel.CENTER);
@@ -106,14 +112,14 @@ public class AuthView extends BaseView {
         fieldsPanel.add(logoPanel);
         fieldsPanel.add(Box.createVerticalStrut(20));
         
-        // Username field
+        // Username field - Create a new dedicated field for login
         txtUsername = new JTextField(20);
         txtUsername.setFont(new Font("Arial", Font.PLAIN, 14));
         txtUsername.setBorder(BorderFactory.createTitledBorder("Username"));
         fieldsPanel.add(txtUsername);
         fieldsPanel.add(Box.createVerticalStrut(10));
         
-        // Password field
+        // Password field - Create a new dedicated field for login
         txtPassword = new JTextField(20);
         txtPassword.setFont(new Font("Arial", Font.PLAIN, 14));
         txtPassword.setBorder(BorderFactory.createTitledBorder("Password"));
@@ -148,8 +154,7 @@ public class AuthView extends BaseView {
         btnRegisterNow.setContentAreaFilled(false);
         btnRegisterNow.setForeground(Color.BLUE);
         btnRegisterNow.addActionListener(e -> {
-            CardLayout cl = (CardLayout) panel.getParent().getLayout();
-            cl.show(panel.getParent(), "register");
+            cardLayout.show(cardPanel, "register");
         });
         buttonsPanel.add(btnRegisterNow);
         
@@ -159,9 +164,7 @@ public class AuthView extends BaseView {
     }
     
     /**
-     * Create the register panel
-     * 
-     * @return a JPanel for registration
+     * Create the register panel with separate fields
      */
     private JPanel createRegisterPanel() {
         JPanel panel = new JPanel(new BorderLayout());
@@ -194,18 +197,18 @@ public class AuthView extends BaseView {
         fieldsPanel.add(photoButtonPanel);
         fieldsPanel.add(Box.createVerticalStrut(10));
         
-        // Username field
-        txtUsername = new JTextField(20);
-        txtUsername.setFont(new Font("Arial", Font.PLAIN, 14));
-        txtUsername.setBorder(BorderFactory.createTitledBorder("Username"));
-        fieldsPanel.add(txtUsername);
+        // Username field - Create separate field for registration
+        txtRegUsername = new JTextField(20);
+        txtRegUsername.setFont(new Font("Arial", Font.PLAIN, 14));
+        txtRegUsername.setBorder(BorderFactory.createTitledBorder("Username"));
+        fieldsPanel.add(txtRegUsername);
         fieldsPanel.add(Box.createVerticalStrut(10));
         
-        // Password field
-        txtPassword = new JTextField(20);
-        txtPassword.setFont(new Font("Arial", Font.PLAIN, 14));
-        txtPassword.setBorder(BorderFactory.createTitledBorder("Password"));
-        fieldsPanel.add(txtPassword);
+        // Password field - Create separate field for registration
+        txtRegPassword = new JTextField(20);
+        txtRegPassword.setFont(new Font("Arial", Font.PLAIN, 14));
+        txtRegPassword.setBorder(BorderFactory.createTitledBorder("Password"));
+        fieldsPanel.add(txtRegPassword);
         fieldsPanel.add(Box.createVerticalStrut(10));
         
         // Bio field
@@ -242,8 +245,7 @@ public class AuthView extends BaseView {
         btnSignIn.setContentAreaFilled(false);
         btnSignIn.setForeground(Color.BLUE);
         btnSignIn.addActionListener(e -> {
-            CardLayout cl = (CardLayout) panel.getParent().getLayout();
-            cl.show(panel.getParent(), "login");
+            cardLayout.show(cardPanel, "login");
         });
         buttonsPanel.add(btnSignIn);
         
@@ -258,12 +260,14 @@ public class AuthView extends BaseView {
      * @param event the action event
      */
     private void onSignInClicked(ActionEvent event) {
+        // Get values directly from the text fields
         String username = txtUsername.getText();
         String password = txtPassword.getText();
         
+        System.out.println("Login attempt - Username: " + username + ", Password length: " + password.length());
+        
         if (username.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Username and password are required.", 
-                                         "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Username and password are required.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -272,8 +276,7 @@ public class AuthView extends BaseView {
             sessionController.login(user);
             navigateTo("home");
         } else {
-            JOptionPane.showMessageDialog(this, "Invalid username or password.", 
-                                         "Authentication Failed", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Invalid username or password.", "Authentication Failed", JOptionPane.ERROR_MESSAGE);
         }
     }
     
@@ -283,13 +286,13 @@ public class AuthView extends BaseView {
      * @param event the action event
      */
     private void onRegisterClicked(ActionEvent event) {
-        String username = txtUsername.getText();
-        String password = txtPassword.getText();
+        // Use separate fields for registration
+        String username = txtRegUsername.getText();
+        String password = txtRegPassword.getText();
         String bio = txtBio.getText();
         
         if (username.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Username and password are required.", 
-                                         "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Username and password are required.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
@@ -303,9 +306,16 @@ public class AuthView extends BaseView {
             JOptionPane.showMessageDialog(this, "Registration successful! Please sign in.", 
                                          "Success", JOptionPane.INFORMATION_MESSAGE);
             
+            // Clear registration fields
+            txtRegUsername.setText("");
+            txtRegPassword.setText("");
+            txtBio.setText("");
+            selectedProfilePhoto = null;
+            lblPhoto.setIcon(new ImageIcon(new ImageIcon("img/logos/DACS.png").getImage()
+                                          .getScaledInstance(80, 80, Image.SCALE_SMOOTH)));
+            
             // Switch to login panel
-            CardLayout cl = (CardLayout) registerPanel.getParent().getLayout();
-            cl.show(registerPanel.getParent(), "login");
+            cardLayout.show(cardPanel, "login");
         } else {
             JOptionPane.showMessageDialog(this, "Username already exists. Please choose a different username.", 
                                          "Registration Failed", JOptionPane.ERROR_MESSAGE);
@@ -317,8 +327,7 @@ public class AuthView extends BaseView {
      */
     private void handleProfilePictureUpload() {
         JFileChooser fileChooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Image files", 
-                                                                   ImageIO.getReaderFileSuffixes());
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Image files", ImageIO.getReaderFileSuffixes());
         fileChooser.setFileFilter(filter);
         
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
@@ -329,8 +338,7 @@ public class AuthView extends BaseView {
                 lblPhoto.setIcon(new ImageIcon(scaledImage));
             } catch (IOException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(this, "Error loading image: " + e.getMessage(), 
-                                             "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Error loading image: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }
@@ -347,12 +355,10 @@ public class AuthView extends BaseView {
             Files.createDirectories(Paths.get(profilePhotoStoragePath));
             
             // Copy file to profile photo storage
-            Files.copy(file.toPath(), Paths.get(profilePhotoStoragePath, username + ".png"), 
-                      StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(file.toPath(), Paths.get(profilePhotoStoragePath, username + ".png"), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error saving profile photo: " + e.getMessage(), 
-                                         "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error saving profile photo: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

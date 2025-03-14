@@ -35,7 +35,7 @@ public class ExploreView extends BaseView {
      * @param pictureController controller for picture operations
      */
     public ExploreView(SessionController sessionController, NavigationController navigationController,
-                      PictureController pictureController) {
+                    PictureController pictureController) {
         super(sessionController, navigationController);
         this.pictureController = pictureController;
         
@@ -177,11 +177,9 @@ public class ExploreView extends BaseView {
         usernameButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         usernameButton.setFont(new Font("Arial", Font.BOLD, 14));
         
-        // Add action to view user profile
         usernameButton.addActionListener(e -> {
-            // This would typically navigate to the profile view with the selected user
-            // For now just print to console
-            System.out.println("View profile for: " + picture.getUsername());
+            // Navigate to the selected user's profile
+            navigateToProfile(picture.getUsername());
         });
         
         headerPanel.add(backButton, BorderLayout.WEST);
@@ -252,5 +250,7 @@ public class ExploreView extends BaseView {
         long minutesBetween = ChronoUnit.MINUTES.between(timestamp, now);
         return minutesBetween + " minute" + (minutesBetween > 1 ? "s" : "") + " ago";
     }
+
+    
 }
 

@@ -113,4 +113,15 @@ public abstract class BaseView extends JFrame {
         button.addActionListener(actionListener);
         return button;
     }
+
+    /**
+     * Navigate to a specific user's profile
+     */
+    protected void navigateToProfile(String username) {
+        // Store the username for the profile view to use
+        sessionController.setTemporaryData("profileUsername", username);
+        
+        // Navigate to the profile view
+        navigateTo("profile");
+    }
 }

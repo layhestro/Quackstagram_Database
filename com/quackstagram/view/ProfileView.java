@@ -58,10 +58,19 @@ public class ProfileView extends BaseView {
 
     @Override
     public void refreshView() {
-        // Refresh the displayed user's profile
-        if (displayedUser != null) {
+        // Check if a specific username was requested
+        Object profileUsername = sessionController.getTemporaryData("profileUsername");
+        if (profileUsername != null && profileUsername instanceof String) {
+            // Clear the temporary data
+            sessionController.removeTemporaryData("profileUsername");
+            
+            // Display the requested profile
+            displayProfile((String) profileUsername);
+        } else if (displayedUser != null) {
+            // Refresh the current profile
             displayProfile(displayedUser.getUsername());
         } else if (sessionController.isLoggedIn()) {
+            // Default to current user's profile
             displayProfile(sessionController.getCurrentUser().getUsername());
         }
     }
@@ -282,7 +291,7 @@ public class ProfileView extends BaseView {
      */
     private JLabel createStatLabel(String number, String text) {
         JLabel label = new JLabel("<html><div style='text-align: center;'>" + number + "<br/>" + text + "</div></html>", 
-                                 SwingConstants.CENTER);
+                                SwingConstants.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 12));
         label.setForeground(Color.BLACK);
         return label;
