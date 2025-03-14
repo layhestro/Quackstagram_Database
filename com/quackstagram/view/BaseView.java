@@ -6,10 +6,6 @@ import com.quackstagram.util.NavigationController;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
 
 /**
  * Abstract base class for all views in the application.

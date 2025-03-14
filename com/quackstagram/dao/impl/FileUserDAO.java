@@ -5,10 +5,8 @@ import com.quackstagram.dao.interfaces.UserDAO;
 import com.quackstagram.model.User;
 import com.quackstagram.util.FileUtil;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;

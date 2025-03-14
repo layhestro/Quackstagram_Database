@@ -9,7 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.time.LocalDateTime;
@@ -25,7 +24,6 @@ public class HomeView extends BaseView {
     private final PictureController pictureController;
     private JPanel contentPanel;
     private JScrollPane scrollPane;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     /**
      * Constructor for HomeView
@@ -35,7 +33,7 @@ public class HomeView extends BaseView {
      * @param pictureController controller for picture operations
      */
     public HomeView(SessionController sessionController, NavigationController navigationController,
-                   PictureController pictureController) {
+                PictureController pictureController) {
         super(sessionController, navigationController);
         this.pictureController = pictureController;
         

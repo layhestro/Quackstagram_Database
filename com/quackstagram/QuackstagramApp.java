@@ -58,13 +58,13 @@ public class QuackstagramApp {
         // Initialize Views
         AuthView authView = new AuthView(sessionController, navigationController, userController);
         ProfileView profileView = new ProfileView(sessionController, navigationController, 
-                                                 userController, pictureController);
+                                                userController, pictureController);
         HomeView homeView = new HomeView(sessionController, navigationController, pictureController);
         NotificationsView notificationsView = new NotificationsView(sessionController, navigationController, 
-                                                                   notificationController);
+                                                                notificationController);
         ExploreView exploreView = new ExploreView(sessionController, navigationController, pictureController);
         ImageUploadView imageUploadView = new ImageUploadView(sessionController, navigationController, 
-                                                             pictureController);
+                                                            pictureController);
         
         // Register Views with Navigation Controller
         navigationController.registerView("auth", authView);
