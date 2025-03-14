@@ -10,6 +10,8 @@ import com.quackstagram.view.*;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * Main application class for Quackstagram
@@ -24,7 +26,6 @@ public class QuackstagramApp {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
-                // Set look and feel to system default
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -38,7 +39,7 @@ public class QuackstagramApp {
     /**
      * Initialize the application components
      */
-    private static void initializeApplication() {
+    public static void initializeApplication() {
         // Initialize DAOs
         UserDAO userDAO = new FileUserDAO();
         PictureDAO pictureDAO = new FilePictureDAO();
@@ -73,25 +74,14 @@ public class QuackstagramApp {
         navigationController.registerView("explore", exploreView);
         navigationController.registerView("upload", imageUploadView);
         
-        // Check if there's already a user logged in
+        // Clear any previous session data (added this line)
         try {
-            // If a user is found in users.txt, consider them logged in
-            String currentUsername = sessionController.loadUserFromFile();
-            if (currentUsername != null && !currentUsername.isEmpty()) {
-                User currentUser = userDAO.findByUsername(currentUsername);
-                if (currentUser != null) {
-                    // User is already logged in
-                    sessionController.login(currentUser);
-                    // Start with Home View
-                    navigationController.navigateTo("home");
-                    return;
-                }
-            }
+            Files.write(Paths.get("data/users.txt"), new byte[0]);
         } catch (IOException e) {
             e.printStackTrace();
         }
         
-        // No user logged in, start with Auth View
+        // Always start with Auth View
         navigationController.navigateTo("auth");
     }
 }
