@@ -1,4 +1,3 @@
-// File: com/quackstagram/view/ImageUploadView.java
 package com.quackstagram.view;
 
 import com.quackstagram.controller.PictureController;
@@ -14,7 +13,6 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import com.quackstagram.util.ImageFilterUtil;
 
 /**
  * View for uploading new images.

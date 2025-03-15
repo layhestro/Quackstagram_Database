@@ -138,39 +138,46 @@ public class FileUserDAO implements UserDAO {
         return users;
     }
 
-    @Override
     public boolean verifyCredentials(String username, String password) {
         try {
-            // Create the file if it doesn't exist
-            FileUtil.createFileIfNotExists(credentialsFilePath);
+            // Log the verification attempt
+            System.out.println("Verifying credentials for: " + username);
             
             // Find line with username
             List<String> lines = FileUtil.readMatchingLines(credentialsFilePath, 
                     line -> line.startsWith(username + ":"));
             
             if (!lines.isEmpty()) {
-                String[] parts = lines.get(0).split(":");
+                String line = lines.get(0);
+                System.out.println("Found credential line: " + line); // For debugging
+                
+                String[] parts = line.split(":");
+                System.out.println("Parts length: " + parts.length); // To check format
+                
                 if (parts.length >= 4) {
                     // New format with salt and hash
                     String storedHash = parts[1];
                     String storedSalt = parts[2];
-                    return PasswordUtil.verifyPassword(password, storedHash, storedSalt);
+                    boolean result = PasswordUtil.verifyPassword(password, storedHash, storedSalt);
+                    System.out.println("New format verification result: " + result);
+                    return result;
                 } else if (parts.length >= 2) {
                     // Legacy format with plaintext password
                     String storedPassword = parts[1];
                     boolean isValid = storedPassword.equals(password);
+                    System.out.println("Legacy format verification result: " + isValid);
                     
                     if (isValid) {
                         // Migrate to new format
-                        User user = findByUsername(username);
-                        if (user != null) {
-                            // User object will already have migrated format
-                            update(user);
-                        }
+                        System.out.println("Migrating to new format");
+                        User user = new User(username, parts.length >= 3 ? parts[2] : "", password);
+                        update(user);
                     }
                     
                     return isValid;
                 }
+            } else {
+                System.out.println("No credentials found for: " + username);
             }
         } catch (IOException e) {
             e.printStackTrace();
