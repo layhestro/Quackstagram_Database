@@ -3,6 +3,7 @@ package com.quackstagram.view;
 
 import com.quackstagram.controller.PictureController;
 import com.quackstagram.controller.SessionController;
+import com.quackstagram.util.ImageFilterUtil;
 import com.quackstagram.util.NavigationController;
 
 import javax.imageio.ImageIO;
@@ -10,8 +11,10 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import com.quackstagram.util.ImageFilterUtil;
 
 /**
  * View for uploading new images.
@@ -21,6 +24,10 @@ public class ImageUploadView extends BaseView {
     private JLabel imagePreviewLabel;
     private JTextArea captionTextArea;
     private File selectedImageFile;
+    private BufferedImage originalImage;
+    private BufferedImage filteredImage;
+    private JComboBox<String> filterComboBox;
+    private String currentFilter = "None";
 
     /**
      * Constructor for ImageUploadView
@@ -29,8 +36,7 @@ public class ImageUploadView extends BaseView {
      * @param navigationController controller for view navigation
      * @param pictureController controller for picture operations
      */
-    public ImageUploadView(SessionController sessionController, NavigationController navigationController,
-                          PictureController pictureController) {
+    public ImageUploadView(SessionController sessionController, NavigationController navigationController, PictureController pictureController) {
         super(sessionController, navigationController);
         this.pictureController = pictureController;
         
@@ -72,21 +78,33 @@ public class ImageUploadView extends BaseView {
             // Spacer
             contentPanel.add(Box.createVerticalStrut(10));
             
-            // Upload button - centered
-            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-            buttonPanel.setMaximumSize(new Dimension(WIDTH - 20, 40));
-            buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            // Upload and filter section
+            JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            controlPanel.setMaximumSize(new Dimension(WIDTH - 20, 40));
+            controlPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
             
             JButton uploadButton = new JButton("Select Image");
             uploadButton.addActionListener(this::handleImageSelection);
-            buttonPanel.add(uploadButton);
+            controlPanel.add(uploadButton);
             
-            contentPanel.add(buttonPanel);
+            // Filter dropdown
+            JLabel filterLabel = new JLabel("Filter:");
+            controlPanel.add(filterLabel);
+            
+            filterComboBox = new JComboBox<>(ImageFilterUtil.getFilterNames());
+            filterComboBox.setSelectedItem("None");
+            filterComboBox.addActionListener(e -> {
+                currentFilter = (String) filterComboBox.getSelectedItem();
+                applyCurrentFilter();
+            });
+            controlPanel.add(filterComboBox);
+            
+            contentPanel.add(controlPanel);
             
             // Spacer
             contentPanel.add(Box.createVerticalStrut(10));
             
-            // Caption panel - properly centered with full width
+            // Caption panel
             JPanel captionPanel = new JPanel();
             captionPanel.setLayout(new BoxLayout(captionPanel, BoxLayout.Y_AXIS));
             captionPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -112,7 +130,7 @@ public class ImageUploadView extends BaseView {
             // Spacer
             contentPanel.add(Box.createVerticalStrut(10));
             
-            // Save button - centered
+            // Save button
             JPanel saveButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
             saveButtonPanel.setMaximumSize(new Dimension(WIDTH - 20, 40));
             saveButtonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -143,10 +161,44 @@ public class ImageUploadView extends BaseView {
         initialize();
     }
     
+        /**
+     * Apply the currently selected filter to the image
+     */
+    private void applyCurrentFilter() {
+        if (originalImage == null) {
+            return;
+        }
+        
+        // Apply the selected filter
+        filteredImage = ImageFilterUtil.applyFilter(originalImage, currentFilter);
+        
+        // Update preview
+        updatePreview(filteredImage);
+    }
+
+        /**
+     * Update the preview label with the provided image
+     */
+    private void updatePreview(BufferedImage image) {
+        // Define the maximum preview dimensions
+        int previewWidth = WIDTH - 60;  // Accounting for padding and borders
+        int previewHeight = HEIGHT / 3 - 20;
+        
+        // Calculate scaled dimensions while preserving aspect ratio
+        double widthRatio = (double) previewWidth / image.getWidth();
+        double heightRatio = (double) previewHeight / image.getHeight();
+        double scale = Math.min(widthRatio, heightRatio);
+        
+        int scaledWidth = (int) (image.getWidth() * scale);
+        int scaledHeight = (int) (image.getHeight() * scale);
+        
+        Image scaledImage = image.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
+        imagePreviewLabel.setIcon(new ImageIcon(scaledImage));
+        imagePreviewLabel.setText(""); // Clear text when image is displayed
+    }
+
     /**
      * Handle image selection button click
-     * 
-     * @param event the action event
      */
     private void handleImageSelection(ActionEvent event) {
         JFileChooser fileChooser = new JFileChooser();
@@ -161,41 +213,32 @@ public class ImageUploadView extends BaseView {
             selectedImageFile = fileChooser.getSelectedFile();
             
             try {
-                // Load and display image preview
-                Image image = ImageIO.read(selectedImageFile);
+                // Load the original image
+                originalImage = ImageIO.read(selectedImageFile);
                 
-                // Define the maximum preview dimensions
-                int previewWidth = WIDTH - 60;  // Accounting for padding and borders
-                int previewHeight = HEIGHT / 3 - 20;
+                // Reset filter to "None"
+                filterComboBox.setSelectedItem("None");
+                currentFilter = "None";
                 
-                // Calculate scaled dimensions while preserving aspect ratio
-                double widthRatio = (double) previewWidth / image.getWidth(null);
-                double heightRatio = (double) previewHeight / image.getHeight(null);
-                double scale = Math.min(widthRatio, heightRatio);
-                
-                int scaledWidth = (int) (image.getWidth(null) * scale);
-                int scaledHeight = (int) (image.getHeight(null) * scale);
-                
-                Image scaledImage = image.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
-                imagePreviewLabel.setIcon(new ImageIcon(scaledImage));
-                imagePreviewLabel.setText(""); // Clear text when image is displayed
+                // Apply current filter (which is "None" at this point)
+                applyCurrentFilter();
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(this, 
                         "Error loading image: " + e.getMessage(), 
                         "Error", JOptionPane.ERROR_MESSAGE);
                 imagePreviewLabel.setIcon(null);
                 imagePreviewLabel.setText("Error loading image");
+                originalImage = null;
+                filteredImage = null;
             }
         }
     }
     
-    /**
+/**
      * Handle image post button click
-     * 
-     * @param event the action event
      */
     private void handleImagePost(ActionEvent event) {
-        if (selectedImageFile == null) {
+        if (originalImage == null) {
             JOptionPane.showMessageDialog(this, 
                     "Please select an image to upload", 
                     "No Image Selected", JOptionPane.WARNING_MESSAGE);
@@ -207,27 +250,43 @@ public class ImageUploadView extends BaseView {
             caption = "No caption"; // Default caption if empty
         }
         
-        boolean success = pictureController.savePicture(
-                sessionController.getCurrentUser().getUsername(), 
-                selectedImageFile, 
-                caption);
-        
-        if (success) {
-            JOptionPane.showMessageDialog(this, 
-                    "Image uploaded successfully!", 
-                    "Success", JOptionPane.INFORMATION_MESSAGE);
+        // Save the filtered image to a temporary file
+        try {
+            File tempFile = File.createTempFile("filtered_", ".png");
+            ImageIO.write(filteredImage, "png", tempFile);
             
-            // Reset form
-            selectedImageFile = null;
-            imagePreviewLabel.setIcon(null);
-            imagePreviewLabel.setText("No image selected");
-            captionTextArea.setText("");
+            boolean success = pictureController.savePicture(
+                    sessionController.getCurrentUser().getUsername(), 
+                    tempFile, 
+                    caption);
             
-            // Navigate to home to see the new post
-            navigateTo("home");
-        } else {
+            if (success) {
+                JOptionPane.showMessageDialog(this, 
+                        "Image uploaded successfully!", 
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
+                
+                // Reset form
+                selectedImageFile = null;
+                originalImage = null;
+                filteredImage = null;
+                imagePreviewLabel.setIcon(null);
+                imagePreviewLabel.setText("No image selected");
+                captionTextArea.setText("");
+                filterComboBox.setSelectedItem("None");
+                
+                // Navigate to home to see the new post
+                navigateTo("home");
+            } else {
+                JOptionPane.showMessageDialog(this, 
+                        "Failed to upload image. Please try again.", 
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            
+            // Clean up temp file
+            tempFile.delete();
+        } catch (IOException e) {
             JOptionPane.showMessageDialog(this, 
-                    "Failed to upload image. Please try again.", 
+                    "Error processing image: " + e.getMessage(), 
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }

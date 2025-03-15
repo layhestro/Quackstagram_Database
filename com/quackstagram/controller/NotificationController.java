@@ -1,4 +1,3 @@
-// File: com/quackstagram/controller/NotificationController.java
 package com.quackstagram.controller;
 
 import com.quackstagram.dao.interfaces.NotificationDAO;
