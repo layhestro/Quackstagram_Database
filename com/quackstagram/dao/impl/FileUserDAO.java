@@ -3,6 +3,7 @@ package com.quackstagram.dao.impl;
 import com.quackstagram.dao.interfaces.UserDAO;
 import com.quackstagram.model.User;
 import com.quackstagram.util.FileUtil;
+import com.quackstagram.util.PasswordUtil;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,6 +21,7 @@ public class FileUserDAO implements UserDAO {
     @Override
     public User findByUsername(String username) {
         try {
+            // Create the file if it doesn't exist
             FileUtil.createFileIfNotExists(credentialsFilePath);
             
             List<String> lines = FileUtil.readMatchingLines(credentialsFilePath, 
@@ -27,10 +29,23 @@ public class FileUserDAO implements UserDAO {
             
             if (!lines.isEmpty()) {
                 String[] parts = lines.get(0).split(":");
-                if (parts.length >= 3) {
+                if (parts.length >= 4) {
+                    // New format: username:passwordHash:salt:bio
+                    String passwordHash = parts[1];
+                    String salt = parts[2];
+                    String bio = parts[3];
+                    return new User(username, bio, passwordHash, salt);
+                } else if (parts.length >= 3) {
+                    // Legacy format: username:password:bio
                     String password = parts[1];
-                    String bio = parts.length > 2 ? parts[2] : "";
-                    return new User(username, bio, password);
+                    String bio = parts[2];
+                    
+                    // Migrate to new format
+                    String salt = PasswordUtil.generateSalt();
+                    String passwordHash = PasswordUtil.hashPassword(password, salt);
+                    User user = new User(username, bio, passwordHash, salt);
+                    update(user); // Save with new format
+                    return user;
                 }
             }
         } catch (IOException e) {
@@ -42,7 +57,10 @@ public class FileUserDAO implements UserDAO {
     @Override
     public void save(User user) {
         try {
+            // Create the file if it doesn't exist
             FileUtil.createFileIfNotExists(credentialsFilePath);
+            
+            // Append user to credentials file
             FileUtil.appendLine(credentialsFilePath, user.toString());
         } catch (IOException e) {
             e.printStackTrace();
@@ -52,10 +70,15 @@ public class FileUserDAO implements UserDAO {
     @Override
     public void update(User user) {
         try {
+            // Create the file if it doesn't exist
             FileUtil.createFileIfNotExists(credentialsFilePath);
+            
+            // Update credentials file
             FileUtil.updateLines(credentialsFilePath, 
                     line -> line.startsWith(user.getUsername() + ":"), 
                     line -> user.toString());
+            
+            // Update current user file
             Files.write(Paths.get(usersFilePath), user.toString().getBytes());
         } catch (IOException e) {
             e.printStackTrace();
@@ -65,9 +88,14 @@ public class FileUserDAO implements UserDAO {
     @Override
     public void delete(String username) {
         try {
+            // Create the file if it doesn't exist
             FileUtil.createFileIfNotExists(credentialsFilePath);
+            
+            // Read all lines except the one to delete
             List<String> lines = FileUtil.readMatchingLines(credentialsFilePath, 
                     line -> !line.startsWith(username + ":"));
+            
+            // Write back to file
             FileUtil.writeLines(credentialsFilePath, lines, false);
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,15 +106,29 @@ public class FileUserDAO implements UserDAO {
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         try {
+            // Create the file if it doesn't exist
             FileUtil.createFileIfNotExists(credentialsFilePath);
+            
+            // Read all lines
             List<String> lines = FileUtil.readAllLines(credentialsFilePath);
             
+            // Parse each line into a User object
             for (String line : lines) {
                 String[] parts = line.split(":");
-                if (parts.length >= 3) {
+                if (parts.length >= 4) {
+                    // New format: username:passwordHash:salt:bio
+                    String username = parts[0];
+                    String passwordHash = parts[1];
+                    String salt = parts[2];
+                    String bio = parts[3];
+                    users.add(new User(username, bio, passwordHash, salt));
+                } else if (parts.length >= 3) {
+                    // Legacy format: username:password:bio
                     String username = parts[0];
                     String password = parts[1];
                     String bio = parts[2];
+                    
+                    // Create user with hashed password (will be saved later)
                     users.add(new User(username, bio, password));
                 }
             }
@@ -99,15 +141,35 @@ public class FileUserDAO implements UserDAO {
     @Override
     public boolean verifyCredentials(String username, String password) {
         try {
+            // Create the file if it doesn't exist
             FileUtil.createFileIfNotExists(credentialsFilePath);
             
+            // Find line with username
             List<String> lines = FileUtil.readMatchingLines(credentialsFilePath, 
                     line -> line.startsWith(username + ":"));
             
             if (!lines.isEmpty()) {
-                String[] parts = lines.get(0).split(":", 3);
-                if (parts.length >= 2) {
-                    return parts[1].equals(password.trim());
+                String[] parts = lines.get(0).split(":");
+                if (parts.length >= 4) {
+                    // New format with salt and hash
+                    String storedHash = parts[1];
+                    String storedSalt = parts[2];
+                    return PasswordUtil.verifyPassword(password, storedHash, storedSalt);
+                } else if (parts.length >= 2) {
+                    // Legacy format with plaintext password
+                    String storedPassword = parts[1];
+                    boolean isValid = storedPassword.equals(password);
+                    
+                    if (isValid) {
+                        // Migrate to new format
+                        User user = findByUsername(username);
+                        if (user != null) {
+                            // User object will already have migrated format
+                            update(user);
+                        }
+                    }
+                    
+                    return isValid;
                 }
             }
         } catch (IOException e) {
@@ -116,8 +178,3 @@ public class FileUserDAO implements UserDAO {
         return false;
     }
 }
-
-
-
-
-
