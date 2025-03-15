@@ -286,9 +286,10 @@ public class HomeView extends BaseView {
         JPanel messagePanel = new JPanel(new BorderLayout());
         messagePanel.setBorder(BorderFactory.createEmptyBorder(50, 20, 50, 20));
         
-        JLabel messageLabel = new JLabel("Your feed is empty. Follow users to see their posts!");
+        // Create a label with HTML formatting for proper text wrapping
+        JLabel messageLabel = new JLabel("<html><div style='text-align: center; width: 200px;'>Your feed is empty. Follow users to see their posts!</div></html>");
         messageLabel.setHorizontalAlignment(JLabel.CENTER);
-        messageLabel.setFont(new Font("Arial", Font.BOLD, 16));
+        messageLabel.setFont(new Font("Arial", Font.PLAIN, 14)); // Reduced font size from 16 to 14
         
         JButton exploreButton = new JButton("Explore Users");
         exploreButton.addActionListener(e -> navigateTo("explore"));
