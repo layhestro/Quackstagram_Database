@@ -1,5 +1,6 @@
-Xylo: Lorin
+Xylo: Lorin; Mystar
 Zara: Lorin
-Mystar: Lorin; Zara
+Mystar: Lorin;  Zara; s
 Lorin: Mystar; Zara
 a: Lorin; Xylo
+s: Lorin

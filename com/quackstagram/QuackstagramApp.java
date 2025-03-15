@@ -1,10 +1,8 @@
-// File: com/quackstagram/QuackstagramApp.java
 package com.quackstagram;
 
 import com.quackstagram.controller.*;
 import com.quackstagram.dao.impl.*;
 import com.quackstagram.dao.interfaces.*;
-import com.quackstagram.model.User;
 import com.quackstagram.util.NavigationController;
 import com.quackstagram.view.*;
 
@@ -27,11 +25,10 @@ public class QuackstagramApp {
         SwingUtilities.invokeLater(() -> {
             try {
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e) {
+            } 
+            catch (Exception e) {
                 e.printStackTrace();
             }
-            
-            // Initialize the application
             initializeApplication();
         });
     }
@@ -57,14 +54,11 @@ public class QuackstagramApp {
         
         // Initialize Views
         AuthView authView = new AuthView(sessionController, navigationController, userController);
-        ProfileView profileView = new ProfileView(sessionController, navigationController, 
-                                                userController, pictureController);
+        ProfileView profileView = new ProfileView(sessionController, navigationController, userController, pictureController);
         HomeView homeView = new HomeView(sessionController, navigationController, pictureController);
-        NotificationsView notificationsView = new NotificationsView(sessionController, navigationController, 
-                                                                notificationController);
+        NotificationsView notificationsView = new NotificationsView(sessionController, navigationController, notificationController);
         ExploreView exploreView = new ExploreView(sessionController, navigationController, pictureController);
-        ImageUploadView imageUploadView = new ImageUploadView(sessionController, navigationController, 
-                                                            pictureController);
+        ImageUploadView imageUploadView = new ImageUploadView(sessionController, navigationController, pictureController);
         
         // Register Views with Navigation Controller
         navigationController.registerView("auth", authView);
@@ -74,14 +68,13 @@ public class QuackstagramApp {
         navigationController.registerView("explore", exploreView);
         navigationController.registerView("upload", imageUploadView);
         
-        // Clear any previous session data (added this line)
         try {
             Files.write(Paths.get("data/users.txt"), new byte[0]);
-        } catch (IOException e) {
+        } 
+        catch (IOException e) {
             e.printStackTrace();
         }
         
-        // Always start with Auth View
         navigationController.navigateTo("auth");
     }
 }

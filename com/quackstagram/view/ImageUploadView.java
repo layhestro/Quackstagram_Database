@@ -53,47 +53,75 @@ public class ImageUploadView extends BaseView {
         
         // Only allow uploads if logged in
         if (sessionController.isLoggedIn()) {
+            // Create a panel for the image preview with fixed size
+            JPanel previewPanel = new JPanel(new BorderLayout());
+            previewPanel.setPreferredSize(new Dimension(WIDTH - 40, HEIGHT / 3));
+            previewPanel.setMaximumSize(new Dimension(WIDTH - 40, HEIGHT / 3));
+            previewPanel.setMinimumSize(new Dimension(WIDTH - 40, HEIGHT / 3));
+            previewPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            previewPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+            
             // Image preview
-            imagePreviewLabel = new JLabel("No image selected");
-            imagePreviewLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-            imagePreviewLabel.setPreferredSize(new Dimension(WIDTH - 40, HEIGHT / 3));
-            imagePreviewLabel.setMinimumSize(new Dimension(WIDTH - 40, HEIGHT / 3));
+            imagePreviewLabel = new JLabel("No image selected", JLabel.CENTER);
             imagePreviewLabel.setHorizontalAlignment(JLabel.CENTER);
-            imagePreviewLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            contentPanel.add(imagePreviewLabel);
+            imagePreviewLabel.setVerticalAlignment(JLabel.CENTER);
+            previewPanel.add(imagePreviewLabel, BorderLayout.CENTER);
+            
+            contentPanel.add(previewPanel);
             
             // Spacer
             contentPanel.add(Box.createVerticalStrut(10));
             
-            // Upload button
+            // Upload button - centered
+            JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            buttonPanel.setMaximumSize(new Dimension(WIDTH - 20, 40));
+            buttonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            
             JButton uploadButton = new JButton("Select Image");
-            uploadButton.setAlignmentX(Component.CENTER_ALIGNMENT);
             uploadButton.addActionListener(this::handleImageSelection);
-            contentPanel.add(uploadButton);
+            buttonPanel.add(uploadButton);
+            
+            contentPanel.add(buttonPanel);
             
             // Spacer
             contentPanel.add(Box.createVerticalStrut(10));
             
-            // Caption text area
+            // Caption panel - properly centered with full width
+            JPanel captionPanel = new JPanel();
+            captionPanel.setLayout(new BoxLayout(captionPanel, BoxLayout.Y_AXIS));
+            captionPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            captionPanel.setMaximumSize(new Dimension(WIDTH - 20, 150));
+            captionPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+            
             JLabel captionLabel = new JLabel("Caption:");
+            captionLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 5, 0));
             captionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-            contentPanel.add(captionLabel);
+            captionPanel.add(captionLabel);
             
             captionTextArea = new JTextArea(5, 20);
             captionTextArea.setLineWrap(true);
             captionTextArea.setWrapStyleWord(true);
             JScrollPane captionScrollPane = new JScrollPane(captionTextArea);
             captionScrollPane.setAlignmentX(Component.LEFT_ALIGNMENT);
-            contentPanel.add(captionScrollPane);
+            captionScrollPane.setPreferredSize(new Dimension(WIDTH - 40, 100));
+            captionScrollPane.setMaximumSize(new Dimension(WIDTH - 40, 100));
+            captionPanel.add(captionScrollPane);
+            
+            contentPanel.add(captionPanel);
             
             // Spacer
             contentPanel.add(Box.createVerticalStrut(10));
             
-            // Save button
+            // Save button - centered
+            JPanel saveButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            saveButtonPanel.setMaximumSize(new Dimension(WIDTH - 20, 40));
+            saveButtonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+            
             JButton saveButton = new JButton("Post Image");
-            saveButton.setAlignmentX(Component.CENTER_ALIGNMENT);
             saveButton.addActionListener(this::handleImagePost);
-            contentPanel.add(saveButton);
+            saveButtonPanel.add(saveButton);
+            
+            contentPanel.add(saveButtonPanel);
         } else {
             // Login prompt
             displayLoginPrompt(contentPanel);
@@ -135,14 +163,12 @@ public class ImageUploadView extends BaseView {
             try {
                 // Load and display image preview
                 Image image = ImageIO.read(selectedImageFile);
-                int previewWidth = imagePreviewLabel.getWidth();
-                int previewHeight = imagePreviewLabel.getHeight();
                 
-                // If the label doesn't have a size yet, use default sizes
-                if (previewWidth <= 0) previewWidth = WIDTH - 40;
-                if (previewHeight <= 0) previewHeight = HEIGHT / 3;
+                // Define the maximum preview dimensions
+                int previewWidth = WIDTH - 60;  // Accounting for padding and borders
+                int previewHeight = HEIGHT / 3 - 20;
                 
-                // Scale image to fit preview area
+                // Calculate scaled dimensions while preserving aspect ratio
                 double widthRatio = (double) previewWidth / image.getWidth(null);
                 double heightRatio = (double) previewHeight / image.getHeight(null);
                 double scale = Math.min(widthRatio, heightRatio);

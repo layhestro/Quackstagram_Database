@@ -35,8 +35,7 @@ public class ProfileView extends BaseView {
      * @param userController controller for user operations
      * @param pictureController controller for picture operations
      */
-    public ProfileView(SessionController sessionController, NavigationController navigationController,
-                      UserController userController, PictureController pictureController) {
+    public ProfileView(SessionController sessionController, NavigationController navigationController,UserController userController, PictureController pictureController) {
         super(sessionController, navigationController);
         this.userController = userController;
         this.pictureController = pictureController;
@@ -58,7 +57,17 @@ public class ProfileView extends BaseView {
 
     @Override
     public void refreshView() {
-        // Check if a specific username was requested
+        // First check if we should view the logged-in user's profile 
+        // (when clicking the profile icon in navigation)
+        if (sessionController.getTemporaryData("viewOwnProfile") != null) {
+            sessionController.removeTemporaryData("viewOwnProfile");
+            if (sessionController.isLoggedIn()) {
+                displayProfile(sessionController.getCurrentUser().getUsername());
+                return;
+            }
+        }
+        
+        // Check if a specific username was requested (for viewing other profiles)
         Object profileUsername = sessionController.getTemporaryData("profileUsername");
         if (profileUsername != null && profileUsername instanceof String) {
             // Clear the temporary data

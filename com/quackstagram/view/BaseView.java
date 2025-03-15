@@ -12,7 +12,7 @@ import java.awt.event.ActionListener;
  * Provides common functionality and UI elements.
  */
 public abstract class BaseView extends JFrame {
-    protected static final int WIDTH = 300;
+    protected static final int WIDTH = 320;
     protected static final int HEIGHT = 500;
     protected static final int NAV_ICON_SIZE = 20;
     
@@ -83,7 +83,7 @@ public abstract class BaseView extends JFrame {
         navigationPanel.setBackground(new Color(249, 249, 249));
         navigationPanel.setLayout(new BoxLayout(navigationPanel, BoxLayout.X_AXIS));
         navigationPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
+    
         navigationPanel.add(createIconButton("img/icons/home.png", e -> navigateTo("home")));
         navigationPanel.add(Box.createHorizontalGlue());
         navigationPanel.add(createIconButton("img/icons/search.png", e -> navigateTo("explore")));
@@ -92,8 +92,18 @@ public abstract class BaseView extends JFrame {
         navigationPanel.add(Box.createHorizontalGlue());
         navigationPanel.add(createIconButton("img/icons/heart.png", e -> navigateTo("notifications")));
         navigationPanel.add(Box.createHorizontalGlue());
-        navigationPanel.add(createIconButton("img/icons/profile.png", e -> navigateTo("profile")));
-
+        
+        // Modified profile button to always show current user's profile
+        navigationPanel.add(createIconButton("img/icons/profile.png", e -> {
+            if (sessionController.isLoggedIn()) {
+                // Clear any previous profile data
+                sessionController.removeTemporaryData("profileUsername");
+                // Set temporary data to current user - this forces showing the correct profile
+                sessionController.setTemporaryData("viewOwnProfile", true);
+            }
+            navigateTo("profile");
+        }));
+    
         return navigationPanel;
     }
     
