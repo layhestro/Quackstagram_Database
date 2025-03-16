@@ -50,3 +50,5 @@ com.quackstagram
 All data is stored in text files in the following directories:
 - `data/` - User credentials, following relationships, and notifications
 - `img/` - Uploaded images and their metadata
+
+P.S. : the password for the original users are still Password
