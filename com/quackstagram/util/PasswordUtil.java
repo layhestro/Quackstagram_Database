@@ -11,7 +11,7 @@ import java.util.Base64;
 public class PasswordUtil {
     
     /**
-     * Generate a random salt
+     * Generates a random salt
      * 
      * @return a random salt as a Base64 encoded string
      */
@@ -23,7 +23,7 @@ public class PasswordUtil {
     }
     
     /**
-     * Hash a password with a salt using SHA-256
+     * Hashes a password with a salt using SHA-256
      * 
      * @param password the password to hash
      * @param salt the salt to use
@@ -41,7 +41,7 @@ public class PasswordUtil {
     }
     
     /**
-     * Verify a password against a stored hash and salt
+     * Verifies a password against a stored hash and salt
      * 
      * @param password the password to verify
      * @param storedHash the stored hash

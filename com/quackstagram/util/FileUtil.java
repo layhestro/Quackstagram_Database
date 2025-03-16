@@ -1,4 +1,3 @@
-// File: com/quackstagram/util/FileUtil.java
 package com.quackstagram.util;
 
 import java.io.BufferedReader;
@@ -21,7 +20,7 @@ import java.util.function.Predicate;
 public class FileUtil {
     
     /**
-     * Read all lines from a file
+     * Reads all lines from a file
      * 
      * @param filePath the path to the file
      * @return a list of lines
@@ -32,7 +31,7 @@ public class FileUtil {
     }
     
     /**
-     * Read all lines from a file that match a predicate
+     * Reads all lines from a file that match a predicate
      * 
      * @param filePath the path to the file
      * @param predicate the predicate to match
@@ -53,7 +52,7 @@ public class FileUtil {
     }
     
     /**
-     * Write lines to a file
+     * Writes lines to a file
      * 
      * @param filePath the path to the file
      * @param lines the lines to write
@@ -63,7 +62,6 @@ public class FileUtil {
     public static void writeLines(String filePath, List<String> lines, boolean append) throws IOException {
         Path path = Paths.get(filePath);
         
-        // Ensure parent directories exist
         Files.createDirectories(path.getParent());
         
         if (append) {
@@ -74,7 +72,7 @@ public class FileUtil {
     }
     
     /**
-     * Append a line to a file
+     * Appends a line to a file
      * 
      * @param filePath the path to the file
      * @param line the line to append
@@ -83,7 +81,6 @@ public class FileUtil {
     public static void appendLine(String filePath, String line) throws IOException {
         Path path = Paths.get(filePath);
         
-        // Ensure parent directories exist
         Files.createDirectories(path.getParent());
         
         try (BufferedWriter writer = Files.newBufferedWriter(path, 
@@ -94,7 +91,7 @@ public class FileUtil {
     }
     
     /**
-     * Update lines in a file based on a predicate
+     * Updates lines in a file based on a predicate
      * 
      * @param filePath the path to the file
      * @param predicate the predicate to match lines to update
@@ -118,7 +115,7 @@ public class FileUtil {
     }
     
     /**
-     * Copy a file
+     * Copies a file
      * 
      * @param source the source file
      * @param destination the destination file
@@ -128,7 +125,6 @@ public class FileUtil {
     public static void copyFile(File source, String destination, boolean replace) throws IOException {
         Path destPath = Paths.get(destination);
         
-        // Ensure parent directories exist
         Files.createDirectories(destPath.getParent());
         
         if (replace) {
@@ -139,7 +135,7 @@ public class FileUtil {
     }
     
     /**
-     * Get the next available ID for a file pattern in a directory
+     * Gets the next available ID for a file pattern in a directory
      * 
      * @param directory the directory to search
      * @param prefix the prefix for files
@@ -150,7 +146,6 @@ public class FileUtil {
     public static int getNextId(String directory, String prefix, String extensionFilter) throws IOException {
         Path dirPath = Paths.get(directory);
         
-        // Ensure directory exists
         Files.createDirectories(dirPath);
         
         int maxId = 0;
@@ -167,7 +162,6 @@ public class FileUtil {
                             maxId = id;
                         }
                     } catch (NumberFormatException e) {
-                        // Ignore files that don't match the expected pattern
                     }
                 }
             }
@@ -177,7 +171,7 @@ public class FileUtil {
     }
     
     /**
-     * Check if a file exists
+     * Checks if a file exists
      * 
      * @param filePath the path to the file
      * @return true if the file exists
@@ -187,7 +181,7 @@ public class FileUtil {
     }
     
     /**
-     * Create a file if it doesn't exist
+     * Creates a file if it doesn't exist
      * 
      * @param filePath the path to the file
      * @throws IOException if an I/O error occurs
@@ -195,7 +189,6 @@ public class FileUtil {
     public static void createFileIfNotExists(String filePath) throws IOException {
         Path path = Paths.get(filePath);
         
-        // Ensure parent directories exist
         Files.createDirectories(path.getParent());
         
         if (!Files.exists(path)) {
@@ -204,7 +197,7 @@ public class FileUtil {
     }
     
     /**
-     * Delete a file
+     * Deletes a file
      * 
      * @param filePath the path to the file
      * @throws IOException if an I/O error occurs

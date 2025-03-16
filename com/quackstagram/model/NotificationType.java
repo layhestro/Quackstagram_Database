@@ -1,4 +1,3 @@
-// File: com/quackstagram/model/NotificationType.java
 package com.quackstagram.model;
 
 /**

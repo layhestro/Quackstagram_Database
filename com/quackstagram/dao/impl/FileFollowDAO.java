@@ -1,4 +1,3 @@
-// File: com/quackstagram/dao/impl/FileFollowDAO.java
 package com.quackstagram.dao.impl;
 
 import com.quackstagram.dao.interfaces.FollowDAO;
@@ -16,15 +15,20 @@ import java.util.stream.Collectors;
 public class FileFollowDAO implements FollowDAO {
     private final String followingFilePath = "data/following.txt";
 
+    /**
+     * Creates a following relationship between users
+     * 
+     * @param follower the username of the follower
+     * @param followed the username of the followed user
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     public void follow(String follower, String followed) throws IOException {
-        // Create the file if it doesn't exist
         FileUtil.createFileIfNotExists(followingFilePath);
         
         boolean found = false;
         List<String> updatedLines = new ArrayList<>();
         
-        // Read the current following.txt file
         List<String> lines = FileUtil.readAllLines(followingFilePath);
         
         for (String line : lines) {
@@ -32,46 +36,45 @@ public class FileFollowDAO implements FollowDAO {
             if (parts[0].trim().equals(follower)) {
                 found = true;
                 
-                // Check if the user is already being followed
                 List<String> followedUsers = new ArrayList<>();
                 if (parts.length > 1 && !parts[1].trim().isEmpty()) {
                     followedUsers.addAll(Arrays.asList(parts[1].trim().split(";")));
                 }
                 
-                // Add the new followed user if not already in the list
                 if (!followedUsers.contains(followed)) {
                     followedUsers.add(followed);
                 }
                 
-                // Reconstruct the line
                 line = follower + ": " + String.join("; ", followedUsers);
             }
             updatedLines.add(line);
         }
         
-        // If the follower wasn't found, add a new entry
         if (!found) {
             updatedLines.add(follower + ": " + followed);
         }
         
-        // Write the updated content back to the file
         FileUtil.writeLines(followingFilePath, updatedLines, false);
     }
 
+    /**
+     * Removes a following relationship between users
+     * 
+     * @param follower the username of the follower
+     * @param followed the username of the followed user
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     public void unfollow(String follower, String followed) throws IOException {
-        // Create the file if it doesn't exist
         FileUtil.createFileIfNotExists(followingFilePath);
         
         List<String> updatedLines = new ArrayList<>();
         
-        // Read the current following.txt file
         List<String> lines = FileUtil.readAllLines(followingFilePath);
         
         for (String line : lines) {
             String[] parts = line.split(":");
             if (parts[0].trim().equals(follower)) {
-                // Remove the unfollowed user
                 List<String> followedUsers = new ArrayList<>();
                 if (parts.length > 1 && !parts[1].trim().isEmpty()) {
                     followedUsers = Arrays.stream(parts[1].trim().split(";"))
@@ -80,24 +83,27 @@ public class FileFollowDAO implements FollowDAO {
                                           .collect(Collectors.toList());
                 }
                 
-                // Reconstruct the line
                 line = follower + ": " + String.join("; ", followedUsers);
             }
             updatedLines.add(line);
         }
         
-        // Write the updated content back to the file
         FileUtil.writeLines(followingFilePath, updatedLines, false);
     }
 
+    /**
+     * Retrieves all followers of a user
+     * 
+     * @param username the username of the user
+     * @return a list of usernames of followers
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     public List<String> getFollowers(String username) throws IOException {
-        // Create the file if it doesn't exist
         FileUtil.createFileIfNotExists(followingFilePath);
         
         List<String> followers = new ArrayList<>();
         
-        // Read the current following.txt file
         List<String> lines = FileUtil.readAllLines(followingFilePath);
         
         for (String line : lines) {
@@ -117,14 +123,19 @@ public class FileFollowDAO implements FollowDAO {
         return followers;
     }
 
+    /**
+     * Retrieves all users that a user is following
+     * 
+     * @param username the username of the user
+     * @return a list of usernames of followed users
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     public List<String> getFollowing(String username) throws IOException {
-        // Create the file if it doesn't exist
         FileUtil.createFileIfNotExists(followingFilePath);
         
         List<String> following = new ArrayList<>();
         
-        // Read the current following.txt file
         List<String> lines = FileUtil.readAllLines(followingFilePath);
         
         for (String line : lines) {
@@ -140,12 +151,18 @@ public class FileFollowDAO implements FollowDAO {
         return following;
     }
 
+    /**
+     * Checks if a user is following another user
+     * 
+     * @param follower the username of the follower
+     * @param followed the username of the followed user
+     * @return true if follower is following followed, false otherwise
+     * @throws IOException if an I/O error occurs
+     */
     @Override
     public boolean isFollowing(String follower, String followed) throws IOException {
-        // Create the file if it doesn't exist
         FileUtil.createFileIfNotExists(followingFilePath);
         
-        // Read the current following.txt file
         List<String> lines = FileUtil.readAllLines(followingFilePath);
         
         for (String line : lines) {

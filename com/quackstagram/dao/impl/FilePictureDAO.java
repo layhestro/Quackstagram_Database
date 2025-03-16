@@ -1,4 +1,3 @@
-// File: com/quackstagram/dao/impl/FilePictureDAO.java
 package com.quackstagram.dao.impl;
 
 import com.quackstagram.dao.interfaces.PictureDAO;
@@ -19,13 +18,17 @@ public class FilePictureDAO implements PictureDAO {
     private final String uploadedImagesPath = "img/uploaded/";
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    /**
+     * Finds a picture by its ID
+     * 
+     * @param imageId the ID of the picture
+     * @return the Picture if found, null otherwise
+     */
     @Override
     public Picture findById(String imageId) {
         try {
-            // Create the file if it doesn't exist
             FileUtil.createFileIfNotExists(imageDetailsFilePath);
             
-            // Find line with image ID
             List<String> lines = FileUtil.readMatchingLines(imageDetailsFilePath, 
                     line -> line.contains("ImageID: " + imageId));
             
@@ -38,18 +41,21 @@ public class FilePictureDAO implements PictureDAO {
         return null;
     }
 
+    /**
+     * Finds all pictures by a specific user
+     * 
+     * @param username the username of the user
+     * @return a list of pictures from the user
+     */
     @Override
     public List<Picture> findByUsername(String username) {
         List<Picture> pictures = new ArrayList<>();
         try {
-            // Create the file if it doesn't exist
             FileUtil.createFileIfNotExists(imageDetailsFilePath);
             
-            // Find lines with username
             List<String> lines = FileUtil.readMatchingLines(imageDetailsFilePath, 
                     line -> line.contains("Username: " + username));
             
-            // Parse each line into a Picture object
             for (String line : lines) {
                 pictures.add(parsePictureFromLine(line));
             }
@@ -59,13 +65,16 @@ public class FilePictureDAO implements PictureDAO {
         return pictures;
     }
 
+    /**
+     * Saves a new picture
+     * 
+     * @param picture the picture to save
+     */
     @Override
     public void save(Picture picture) {
         try {
-            // Create the file if it doesn't exist
             FileUtil.createFileIfNotExists(imageDetailsFilePath);
             
-            // Format the line to save
             String line = String.format("ImageID: %s, Username: %s, Bio: %s, Timestamp: %s, Likes: %d",
                     picture.getImageId(),
                     picture.getUsername(),
@@ -73,20 +82,22 @@ public class FilePictureDAO implements PictureDAO {
                     picture.getTimestamp().format(formatter),
                     picture.getLikesCount());
             
-            // Append to file
             FileUtil.appendLine(imageDetailsFilePath, line);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Updates an existing picture
+     * 
+     * @param picture the picture to update
+     */
     @Override
     public void update(Picture picture) {
         try {
-            // Create the file if it doesn't exist
             FileUtil.createFileIfNotExists(imageDetailsFilePath);
             
-            // Update the file
             FileUtil.updateLines(imageDetailsFilePath, 
                     line -> line.contains("ImageID: " + picture.getImageId()), 
                     line -> String.format("ImageID: %s, Username: %s, Bio: %s, Timestamp: %s, Likes: %d",
@@ -100,37 +111,41 @@ public class FilePictureDAO implements PictureDAO {
         }
     }
 
+    /**
+     * Deletes a picture by ID
+     * 
+     * @param imageId the ID of the picture to delete
+     */
     @Override
     public void delete(String imageId) {
         try {
-            // Create the file if it doesn't exist
             FileUtil.createFileIfNotExists(imageDetailsFilePath);
             
-            // Read all lines except the one to delete
             List<String> lines = FileUtil.readMatchingLines(imageDetailsFilePath, 
                     line -> !line.contains("ImageID: " + imageId));
             
-            // Write back to file
             FileUtil.writeLines(imageDetailsFilePath, lines, false);
             
-            // Delete the image file
             FileUtil.deleteFile(uploadedImagesPath + imageId + ".png");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Retrieves pictures from users that a user follows
+     * 
+     * @param username the username of the user
+     * @return a list of pictures from followed users
+     */
     @Override
     public List<Picture> getFollowedUsersPictures(String username) {
         List<Picture> pictures = new ArrayList<>();
         try {
-            // Get list of followed users
             List<String> followedUsers = new ArrayList<>();
             
-            // Create following file if it doesn't exist
             FileUtil.createFileIfNotExists("data/following.txt");
             
-            // Find line with username
             List<String> followingLines = FileUtil.readMatchingLines("data/following.txt", 
                     line -> line.startsWith(username + ":"));
             
@@ -144,7 +159,6 @@ public class FilePictureDAO implements PictureDAO {
                 }
             }
             
-            // Get pictures for each followed user
             for (String followedUser : followedUsers) {
                 pictures.addAll(findByUsername(followedUser));
             }
@@ -154,17 +168,19 @@ public class FilePictureDAO implements PictureDAO {
         return pictures;
     }
 
+    /**
+     * Retrieves all pictures
+     * 
+     * @return a list of all pictures
+     */
     @Override
     public List<Picture> getAllPictures() {
         List<Picture> pictures = new ArrayList<>();
         try {
-            // Create the file if it doesn't exist
             FileUtil.createFileIfNotExists(imageDetailsFilePath);
             
-            // Read all lines
             List<String> lines = FileUtil.readAllLines(imageDetailsFilePath);
             
-            // Parse each line into a Picture object
             for (String line : lines) {
                 pictures.add(parsePictureFromLine(line));
             }
@@ -175,7 +191,7 @@ public class FilePictureDAO implements PictureDAO {
     }
 
     /**
-     * Parse a line from the image details file into a Picture object
+     * Parses a line from the image details file into a Picture object
      * 
      * @param line the line to parse
      * @return the Picture object
@@ -192,7 +208,6 @@ public class FilePictureDAO implements PictureDAO {
         String imagePath = uploadedImagesPath + imageId + ".png";
         
         Picture picture = new Picture(imageId, username, imagePath, caption, timestamp);
-        // Set the likes count
         for (int i = 0; i < likes; i++) {
             picture.like();
         }

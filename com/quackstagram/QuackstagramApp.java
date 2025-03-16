@@ -3,7 +3,6 @@ package com.quackstagram;
 import com.quackstagram.controller.*;
 import com.quackstagram.dao.impl.*;
 import com.quackstagram.dao.interfaces.*;
-import com.quackstagram.util.NavigationController;
 import com.quackstagram.view.*;
 
 import javax.swing.*;
@@ -34,25 +33,21 @@ public class QuackstagramApp {
     }
     
     /**
-     * Initialize the application components
+     * Initializes the application components
      */
     public static void initializeApplication() {
-        // Initialize DAOs
         UserDAO userDAO = new FileUserDAO();
         PictureDAO pictureDAO = new FilePictureDAO();
         NotificationDAO notificationDAO = new FileNotificationDAO();
         FollowDAO followDAO = new FileFollowDAO();
         
-        // Initialize Controllers
         UserController userController = new UserController(userDAO, followDAO);
         NotificationController notificationController = new NotificationController(notificationDAO);
         PictureController pictureController = new PictureController(pictureDAO, userDAO, notificationController);
         SessionController sessionController = new SessionController();
         
-        // Initialize Navigation Controller
         NavigationController navigationController = new NavigationController();
         
-        // Initialize Views
         AuthView authView = new AuthView(sessionController, navigationController, userController);
         ProfileView profileView = new ProfileView(sessionController, navigationController, userController, pictureController);
         HomeView homeView = new HomeView(sessionController, navigationController, pictureController);
@@ -60,7 +55,6 @@ public class QuackstagramApp {
         ExploreView exploreView = new ExploreView(sessionController, navigationController, pictureController);
         ImageUploadView imageUploadView = new ImageUploadView(sessionController, navigationController, pictureController);
         
-        // Register Views with Navigation Controller
         navigationController.registerView("auth", authView);
         navigationController.registerView("profile", profileView);
         navigationController.registerView("home", homeView);

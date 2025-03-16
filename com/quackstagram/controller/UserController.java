@@ -1,4 +1,3 @@
-// File: com/quackstagram/controller/UserController.java
 package com.quackstagram.controller;
 
 import com.quackstagram.dao.interfaces.FollowDAO;
@@ -27,7 +26,7 @@ public class UserController {
     }
     
     /**
-     * Get a user by username
+     * Retrieves a user by username
      * 
      * @param username the username of the user
      * @return the User if found, null otherwise
@@ -35,14 +34,13 @@ public class UserController {
     public User getUser(String username) {
         User user = userDAO.findByUsername(username);
         if (user != null) {
-            // Update user stats
             updateUserStats(user);
         }
         return user;
     }
     
     /**
-     * Register a new user
+     * Registers a new user
      * 
      * @param username the username
      * @param password the password
@@ -50,19 +48,17 @@ public class UserController {
      * @return true if registration successful, false otherwise
      */
     public boolean registerUser(String username, String password, String bio) {
-        // Check if username already exists
         if (userDAO.findByUsername(username) != null) {
             return false;
         }
         
-        // Create and save user
         User user = new User(username, bio, password);
         userDAO.save(user);
         return true;
     }
     
     /**
-     * Update user information
+     * Updates user information
      * 
      * @param user the user to update
      */
@@ -71,18 +67,16 @@ public class UserController {
     }
     
     /**
-     * Follow a user
+     * Creates a following relationship between users
      * 
      * @param follower the username of the follower
      * @param followed the username of the followed user
      */
     public void followUser(String follower, String followed) {
         try {
-            // Check if already following
             if (!followDAO.isFollowing(follower, followed)) {
                 followDAO.follow(follower, followed);
                 
-                // Update user stats
                 User followerUser = userDAO.findByUsername(follower);
                 User followedUser = userDAO.findByUsername(followed);
                 
@@ -102,7 +96,7 @@ public class UserController {
     }
     
     /**
-     * Get followers for a user
+     * Retrieves followers for a user
      * 
      * @param username the username of the user
      * @return a list of followers usernames
@@ -112,12 +106,12 @@ public class UserController {
             return followDAO.getFollowers(username);
         } catch (IOException e) {
             e.printStackTrace();
-            return List.of(); // Return empty list on error
+            return List.of();
         }
     }
     
     /**
-     * Get users that a user is following
+     * Retrieves users that a user is following
      * 
      * @param username the username of the user
      * @return a list of following usernames
@@ -127,12 +121,12 @@ public class UserController {
             return followDAO.getFollowing(username);
         } catch (IOException e) {
             e.printStackTrace();
-            return List.of(); // Return empty list on error
+            return List.of();
         }
     }
     
     /**
-     * Authenticate a user
+     * Authenticates a user with username and password
      * 
      * @param username the username
      * @param password the password
@@ -150,13 +144,12 @@ public class UserController {
     }
     
     /**
-     * Update user statistics (post count, followers, following)
+     * Updates user statistics (post count, followers, following)
      * 
      * @param user the user to update stats for
      */
     private void updateUserStats(User user) {
         try {
-            // Update follower and following counts
             int followersCount = followDAO.getFollowers(user.getUsername()).size();
             int followingCount = followDAO.getFollowing(user.getUsername()).size();
             
@@ -167,8 +160,3 @@ public class UserController {
         }
     }
 }
-
-
-
-
-

@@ -1,10 +1,9 @@
-// File: com/quackstagram/view/ExploreView.java
 package com.quackstagram.view;
 
 import com.quackstagram.controller.PictureController;
 import com.quackstagram.controller.SessionController;
 import com.quackstagram.model.Picture;
-import com.quackstagram.util.NavigationController;
+import com.quackstagram.controller.NavigationController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,22 +42,21 @@ public class ExploreView extends BaseView {
         initialize();
     }
 
+    /**
+     * Initializes the UI components
+     */
     @Override
     public void initialize() {
         getContentPane().removeAll();
         
-        // Header panel
         JPanel headerPanel = createHeaderPanel("Explore");
         add(headerPanel, BorderLayout.NORTH);
         
-        // Card layout for switching between grid and detail view
         cardLayout = new CardLayout();
         cardPanel = new JPanel(cardLayout);
         
-        // Grid panel
         gridPanel = new JPanel(new BorderLayout());
         
-        // Search bar
         JPanel searchPanel = new JPanel(new BorderLayout());
         JTextField searchField = new JTextField("Search users or posts");
         searchField.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -76,33 +74,31 @@ public class ExploreView extends BaseView {
         searchPanel.add(searchField, BorderLayout.CENTER);
         gridPanel.add(searchPanel, BorderLayout.NORTH);
         
-        // Image grid
         contentPanel = new JPanel(new GridLayout(0, 3, 2, 2));
         JScrollPane scrollPane = new JScrollPane(contentPanel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         gridPanel.add(scrollPane, BorderLayout.CENTER);
         
-        // Detail panel
         detailPanel = new JPanel(new BorderLayout());
         
-        // Add panels to card layout
         cardPanel.add(gridPanel, "grid");
         cardPanel.add(detailPanel, "detail");
         
         add(cardPanel, BorderLayout.CENTER);
         
-        // Navigation panel
         JPanel navigationPanel = createNavigationPanel();
         add(navigationPanel, BorderLayout.SOUTH);
         
-        // Load explore content
         loadExploreContent();
         
         revalidate();
         repaint();
     }
 
+    /**
+     * Refreshes the view with current data
+     */
     @Override
     public void refreshView() {
         contentPanel.removeAll();
@@ -110,12 +106,11 @@ public class ExploreView extends BaseView {
         contentPanel.revalidate();
         contentPanel.repaint();
         
-        // Show grid view by default
         cardLayout.show(cardPanel, "grid");
     }
     
     /**
-     * Load all pictures for explore view
+     * Loads all pictures for explore view
      */
     private void loadExploreContent() {
         List<Picture> allPictures = pictureController.getAllPictures();
@@ -127,7 +122,7 @@ public class ExploreView extends BaseView {
     }
     
     /**
-     * Create a thumbnail for an image in the grid
+     * Creates a thumbnail for an image in the grid
      * 
      * @param picture the picture to display
      * @return a panel containing the image thumbnail
@@ -136,7 +131,6 @@ public class ExploreView extends BaseView {
         JPanel container = new JPanel(new BorderLayout());
         container.setPreferredSize(new Dimension(IMAGE_SIZE, IMAGE_SIZE));
         
-        // Load and scale image
         ImageIcon originalIcon = new ImageIcon(picture.getImagePath());
         Image scaledImage = originalIcon.getImage().getScaledInstance(
                 IMAGE_SIZE, IMAGE_SIZE, Image.SCALE_SMOOTH);
@@ -145,7 +139,6 @@ public class ExploreView extends BaseView {
         JLabel imageLabel = new JLabel(scaledIcon);
         imageLabel.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
-        // Make the image clickable
         imageLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -158,14 +151,13 @@ public class ExploreView extends BaseView {
     }
     
     /**
-     * Display detailed view of an image
+     * Displays detailed view of an image
      * 
      * @param picture the picture to display in detail
      */
     private void displayImageDetail(Picture picture) {
         detailPanel.removeAll();
         
-        // Header with username and back button
         JPanel headerPanel = new JPanel(new BorderLayout());
         
         JButton backButton = new JButton("Back");
@@ -178,19 +170,16 @@ public class ExploreView extends BaseView {
         usernameButton.setFont(new Font("Arial", Font.BOLD, 14));
         
         usernameButton.addActionListener(e -> {
-            // Navigate to the selected user's profile
             navigateToProfile(picture.getUsername());
         });
         
         headerPanel.add(backButton, BorderLayout.WEST);
         headerPanel.add(usernameButton, BorderLayout.CENTER);
         
-        // Image
         ImageIcon imageIcon = new ImageIcon(picture.getImagePath());
         JLabel imageLabel = new JLabel(imageIcon);
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
         
-        // Info panel
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         
@@ -224,12 +213,11 @@ public class ExploreView extends BaseView {
         detailPanel.revalidate();
         detailPanel.repaint();
         
-        // Show detail view
         cardLayout.show(cardPanel, "detail");
     }
     
     /**
-     * Format timestamp as "X days/hours/minutes ago"
+     * Formats timestamp as "X days/hours/minutes ago"
      * 
      * @param timestamp the timestamp to format
      * @return a formatted string representing time elapsed
@@ -250,7 +238,4 @@ public class ExploreView extends BaseView {
         long minutesBetween = ChronoUnit.MINUTES.between(timestamp, now);
         return minutesBetween + " minute" + (minutesBetween > 1 ? "s" : "") + " ago";
     }
-
-    
 }
-

@@ -3,7 +3,7 @@ package com.quackstagram.view;
 import com.quackstagram.controller.PictureController;
 import com.quackstagram.controller.SessionController;
 import com.quackstagram.model.Picture;
-import com.quackstagram.util.NavigationController;
+import com.quackstagram.controller.NavigationController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,15 +41,16 @@ public class HomeView extends BaseView {
         initialize();
     }
 
+    /**
+     * Initializes the UI components
+     */
     @Override
     public void initialize() {
         getContentPane().removeAll();
         
-        // Header panel
         JPanel headerPanel = createHeaderPanel("Quackstagram");
         add(headerPanel, BorderLayout.NORTH);
         
-        // Content panel with scroll
         contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         scrollPane = new JScrollPane(contentPanel);
@@ -57,20 +58,20 @@ public class HomeView extends BaseView {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane, BorderLayout.CENTER);
         
-        // Navigation panel
         JPanel navigationPanel = createNavigationPanel();
         add(navigationPanel, BorderLayout.SOUTH);
         
-        // Load feed content
         loadFeedContent();
         
         revalidate();
         repaint();
     }
 
+    /**
+     * Refreshes the view with current data
+     */
     @Override
     public void refreshView() {
-        // Reload feed content
         contentPanel.removeAll();
         loadFeedContent();
         contentPanel.revalidate();
@@ -78,7 +79,7 @@ public class HomeView extends BaseView {
     }
     
     /**
-     * Load feed content from followed users
+     * Loads feed content from followed users
      */
     private void loadFeedContent() {
         if (!sessionController.isLoggedIn()) {
@@ -97,7 +98,6 @@ public class HomeView extends BaseView {
         for (Picture picture : feedPictures) {
             contentPanel.add(createPicturePanel(picture));
             
-            // Add a spacing panel between posts
             JPanel spacingPanel = new JPanel();
             spacingPanel.setPreferredSize(new Dimension(WIDTH - 10, 10));
             spacingPanel.setBackground(new Color(230, 230, 230));
@@ -106,7 +106,7 @@ public class HomeView extends BaseView {
     }
     
     /**
-     * Create a panel for a single picture post
+     * Creates a panel for a single picture post
      * 
      * @param picture the picture to display
      * @return a panel containing the picture post
@@ -117,13 +117,11 @@ public class HomeView extends BaseView {
         picturePanel.setBackground(Color.WHITE);
         picturePanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
-        // Username header
         JLabel usernameLabel = new JLabel(picture.getUsername());
         usernameLabel.setFont(new Font("Arial", Font.BOLD, 14));
         usernameLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         picturePanel.add(usernameLabel);
         
-        // Image
         ImageIcon imageIcon;
         try {
             ImageIcon originalIcon = new ImageIcon(picture.getImagePath());
@@ -131,7 +129,7 @@ public class HomeView extends BaseView {
                     IMAGE_WIDTH, IMAGE_HEIGHT, Image.SCALE_SMOOTH);
             imageIcon = new ImageIcon(scaledImage);
         } catch (Exception e) {
-            imageIcon = new ImageIcon(); // Empty icon if image can't be loaded
+            imageIcon = new ImageIcon();
         }
         
         JLabel imageLabel = new JLabel(imageIcon);
@@ -139,7 +137,6 @@ public class HomeView extends BaseView {
         imageLabel.setPreferredSize(new Dimension(IMAGE_WIDTH, IMAGE_HEIGHT));
         imageLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
         
-        // Make image clickable to show full-size view
         imageLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -149,23 +146,19 @@ public class HomeView extends BaseView {
         
         picturePanel.add(imageLabel);
         
-        // Caption
         JLabel captionLabel = new JLabel(picture.getCaption());
         captionLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         picturePanel.add(captionLabel);
         
-        // Likes
         JLabel likesLabel = new JLabel("Likes: " + picture.getLikesCount());
         likesLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         picturePanel.add(likesLabel);
         
-        // Timestamp
         JLabel timeLabel = new JLabel(getTimeAgo(picture.getTimestamp()));
         timeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         timeLabel.setFont(new Font("Arial", Font.ITALIC, 10));
         picturePanel.add(timeLabel);
         
-        // Like button
         JButton likeButton = new JButton("❤");
         likeButton.setAlignmentX(Component.LEFT_ALIGNMENT);
         likeButton.setBackground(LIKE_BUTTON_COLOR);
@@ -185,7 +178,7 @@ public class HomeView extends BaseView {
     }
     
     /**
-     * Display a dialog with the full-sized image
+     * Displays a dialog with the full-sized image
      * 
      * @param picture the picture to display
      */
@@ -193,30 +186,24 @@ public class HomeView extends BaseView {
         JDialog dialog = new JDialog(this, picture.getCaption(), true);
         dialog.setLayout(new BorderLayout());
         
-        // Image
         ImageIcon imageIcon = new ImageIcon(picture.getImagePath());
         JLabel imageLabel = new JLabel(imageIcon);
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
         
-        // Info panel
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         
-        // Username and timestamp
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.add(new JLabel(picture.getUsername()), BorderLayout.WEST);
         headerPanel.add(new JLabel(getTimeAgo(picture.getTimestamp())), BorderLayout.EAST);
         infoPanel.add(headerPanel);
         
-        // Caption
         JLabel captionLabel = new JLabel(picture.getCaption());
         infoPanel.add(captionLabel);
         
-        // Likes
         JLabel likesLabel = new JLabel("Likes: " + picture.getLikesCount());
         infoPanel.add(likesLabel);
         
-        // Like button
         JButton likeButton = new JButton("❤ Like");
         likeButton.addActionListener(e -> {
             if (sessionController.isLoggedIn()) {
@@ -237,7 +224,7 @@ public class HomeView extends BaseView {
     }
     
     /**
-     * Format timestamp as "X days/hours/minutes ago"
+     * Formats timestamp as "X days/hours/minutes ago"
      * 
      * @param timestamp the timestamp to format
      * @return a formatted string representing time elapsed
@@ -260,7 +247,7 @@ public class HomeView extends BaseView {
     }
     
     /**
-     * Display a message when user is not logged in
+     * Displays a message when user is not logged in
      */
     private void displayLoginPrompt() {
         JPanel messagePanel = new JPanel(new BorderLayout());
@@ -280,16 +267,15 @@ public class HomeView extends BaseView {
     }
     
     /**
-     * Display a message when feed is empty
+     * Displays a message when feed is empty
      */
     private void displayEmptyFeedMessage() {
         JPanel messagePanel = new JPanel(new BorderLayout());
         messagePanel.setBorder(BorderFactory.createEmptyBorder(50, 20, 50, 20));
         
-        // Create a label with HTML formatting for proper text wrapping
         JLabel messageLabel = new JLabel("<html><div style='text-align: center; width: 200px;'>Your feed is empty. Follow users to see their posts!</div></html>");
         messageLabel.setHorizontalAlignment(JLabel.CENTER);
-        messageLabel.setFont(new Font("Arial", Font.PLAIN, 14)); // Reduced font size from 16 to 14
+        messageLabel.setFont(new Font("Arial", Font.PLAIN, 14));
         
         JButton exploreButton = new JButton("Explore Users");
         exploreButton.addActionListener(e -> navigateTo("explore"));

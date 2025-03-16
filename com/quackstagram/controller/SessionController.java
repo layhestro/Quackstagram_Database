@@ -25,7 +25,7 @@ public class SessionController {
     }
     
     /**
-     * Log in a user
+     * Logs in a user and saves their data
      * 
      * @param user the user to log in
      */
@@ -39,12 +39,11 @@ public class SessionController {
     }
     
     /**
-     * Log out the current user
+     * Logs out the current user and clears saved data
      */
     public void logout() {
         this.currentUser = null;
         try {
-            // Clear users.txt
             Files.write(Paths.get(usersFilePath), new byte[0]);
         } catch (IOException e) {
             e.printStackTrace();
@@ -52,7 +51,7 @@ public class SessionController {
     }
     
     /**
-     * Get the currently logged in user
+     * Retrieves the currently logged in user
      * 
      * @return the current user, or null if no user is logged in
      */
@@ -61,7 +60,7 @@ public class SessionController {
     }
     
     /**
-     * Check if any user is logged in
+     * Checks if any user is currently logged in
      * 
      * @return true if a user is logged in, false otherwise
      */
@@ -70,7 +69,7 @@ public class SessionController {
     }
     
     /**
-     * Load current user from file
+     * Loads current user from file
      * 
      * @return the username of the current user, or null if no user is logged in
      * @throws IOException if an I/O error occurs
@@ -85,22 +84,30 @@ public class SessionController {
         return null;
     }
 
-        /**
-     * Store a value to be passed between views
+    /**
+     * Stores a value to be passed between views
+     * 
+     * @param key the key for the data
+     * @param value the value to store
      */
     public void setTemporaryData(String key, Object value) {
         temporaryData.put(key, value);
     }
 
     /**
-    * Retrieve a value passed between views
-    */
+     * Retrieves a value passed between views
+     * 
+     * @param key the key for the data
+     * @return the stored value, or null if not found
+     */
     public Object getTemporaryData(String key) {
         return temporaryData.get(key);
     }
 
     /**
-     * Remove a temporary value after it's been used
+     * Removes a temporary value after it's been used
+     * 
+     * @param key the key for the data to remove
      */
     public void removeTemporaryData(String key) {
         temporaryData.remove(key);

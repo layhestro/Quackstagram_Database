@@ -1,7 +1,7 @@
 package com.quackstagram.view;
 
 import com.quackstagram.controller.SessionController;
-import com.quackstagram.util.NavigationController;
+import com.quackstagram.controller.NavigationController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -37,17 +37,17 @@ public abstract class BaseView extends JFrame {
     }
     
     /**
-     * Initialize the UI components
+     * Initializes the UI components
      */
     public abstract void initialize();
     
     /**
-     * Refresh the view with current data
+     * Refreshes the view with current data
      */
     public abstract void refreshView();
     
     /**
-     * Navigate to another view
+     * Navigates to another view
      * 
      * @param viewName the name of the view to navigate to
      */
@@ -57,7 +57,7 @@ public abstract class BaseView extends JFrame {
     }
     
     /**
-     * Create standard header panel
+     * Creates standard header panel
      * 
      * @param title the title to display in the header
      * @return a JPanel containing the header
@@ -74,7 +74,7 @@ public abstract class BaseView extends JFrame {
     }
     
     /**
-     * Create standard navigation panel
+     * Creates standard navigation panel
      * 
      * @return a JPanel containing the navigation bar
      */
@@ -93,12 +93,9 @@ public abstract class BaseView extends JFrame {
         navigationPanel.add(createIconButton("img/icons/heart.png", e -> navigateTo("notifications")));
         navigationPanel.add(Box.createHorizontalGlue());
         
-        // Modified profile button to always show current user's profile
         navigationPanel.add(createIconButton("img/icons/profile.png", e -> {
             if (sessionController.isLoggedIn()) {
-                // Clear any previous profile data
                 sessionController.removeTemporaryData("profileUsername");
-                // Set temporary data to current user - this forces showing the correct profile
                 sessionController.setTemporaryData("viewOwnProfile", true);
             }
             navigateTo("profile");
@@ -108,7 +105,7 @@ public abstract class BaseView extends JFrame {
     }
     
     /**
-     * Create an icon button for navigation
+     * Creates an icon button for navigation
      * 
      * @param iconPath the path to the icon image
      * @param actionListener the action listener for the button
@@ -125,13 +122,12 @@ public abstract class BaseView extends JFrame {
     }
 
     /**
-     * Navigate to a specific user's profile
+     * Navigates to a specific user's profile
+     * 
+     * @param username the username of the profile to navigate to
      */
     protected void navigateToProfile(String username) {
-        // Store the username for the profile view to use
         sessionController.setTemporaryData("profileUsername", username);
-        
-        // Navigate to the profile view
         navigateTo("profile");
     }
 }

@@ -5,7 +5,7 @@ import com.quackstagram.controller.SessionController;
 import com.quackstagram.controller.UserController;
 import com.quackstagram.model.Picture;
 import com.quackstagram.model.User;
-import com.quackstagram.util.NavigationController;
+import com.quackstagram.controller.NavigationController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,18 +47,21 @@ public class ProfileView extends BaseView {
         initialize();
     }
 
+    /**
+     * Initializes the UI components
+     */
     @Override
     public void initialize() {
-        // Initially display the logged in user's profile
         if (sessionController.isLoggedIn()) {
             displayProfile(sessionController.getCurrentUser().getUsername());
         }
     }
 
+    /**
+     * Refreshes the view with current data
+     */
     @Override
     public void refreshView() {
-        // First check if we should view the logged-in user's profile 
-        // (when clicking the profile icon in navigation)
         if (sessionController.getTemporaryData("viewOwnProfile") != null) {
             sessionController.removeTemporaryData("viewOwnProfile");
             if (sessionController.isLoggedIn()) {
@@ -67,30 +70,24 @@ public class ProfileView extends BaseView {
             }
         }
         
-        // Check if a specific username was requested (for viewing other profiles)
         Object profileUsername = sessionController.getTemporaryData("profileUsername");
         if (profileUsername != null && profileUsername instanceof String) {
-            // Clear the temporary data
             sessionController.removeTemporaryData("profileUsername");
             
-            // Display the requested profile
             displayProfile((String) profileUsername);
         } else if (displayedUser != null) {
-            // Refresh the current profile
             displayProfile(displayedUser.getUsername());
         } else if (sessionController.isLoggedIn()) {
-            // Default to current user's profile
             displayProfile(sessionController.getCurrentUser().getUsername());
         }
     }
     
     /**
-     * Display a user's profile
+     * Displays a user's profile
      * 
      * @param username the username of the user to display
      */
     public void displayProfile(String username) {
-        // Get user data
         User user = userController.getUser(username);
         if (user == null) {
             return;
@@ -98,22 +95,17 @@ public class ProfileView extends BaseView {
         
         this.displayedUser = user;
         
-        // Clear existing content
         getContentPane().removeAll();
         
-        // Create header panel with user info
         headerPanel = createProfileHeaderPanel(user);
         
-        // Create content panel with image grid
         contentPanel = new JPanel(new GridLayout(0, 3, 5, 5));
         JScrollPane scrollPane = new JScrollPane(contentPanel);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         
-        // Load user's pictures
         loadUserPictures(user.getUsername());
         
-        // Add panels to frame
         add(headerPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(createNavigationPanel(), BorderLayout.SOUTH);
@@ -123,7 +115,7 @@ public class ProfileView extends BaseView {
     }
     
     /**
-     * Create the profile header panel with user info
+     * Creates the profile header panel with user info
      * 
      * @param user the user to display
      * @return a JPanel containing the user profile header
@@ -133,18 +125,15 @@ public class ProfileView extends BaseView {
         headerPanel.setLayout(new BoxLayout(headerPanel, BoxLayout.Y_AXIS));
         headerPanel.setBackground(Color.WHITE);
         
-        // Top part of header (profile image, stats, follow button)
         JPanel topHeaderPanel = new JPanel(new BorderLayout(10, 0));
         topHeaderPanel.setBackground(new Color(249, 249, 249));
         
-        // Profile image
         ImageIcon profileIcon = new ImageIcon(new ImageIcon("img/storage/profile/" + user.getUsername() + ".png")
                 .getImage().getScaledInstance(PROFILE_IMAGE_SIZE, PROFILE_IMAGE_SIZE, Image.SCALE_SMOOTH));
         JLabel profileImage = new JLabel(profileIcon);
         profileImage.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         topHeaderPanel.add(profileImage, BorderLayout.WEST);
         
-        // Stats panel
         JPanel statsPanel = new JPanel();
         statsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
         statsPanel.setBackground(new Color(249, 249, 249));
@@ -153,7 +142,6 @@ public class ProfileView extends BaseView {
         statsPanel.add(createStatLabel(Integer.toString(user.getFollowingCount()), "Following"));
         statsPanel.setBorder(BorderFactory.createEmptyBorder(25, 0, 10, 0));
         
-        // Follow button
         JButton followButton;
         boolean isCurrentUser = sessionController.isLoggedIn() && 
                                sessionController.getCurrentUser().getUsername().equals(user.getUsername());
@@ -165,7 +153,6 @@ public class ProfileView extends BaseView {
                                                .contains(user.getUsername());
             followButton = new JButton(isFollowing ? "Following" : "Follow");
             
-            // Add action listener for follow button
             followButton.addActionListener(e -> {
                 if (!isFollowing) {
                     userController.followUser(sessionController.getCurrentUser().getUsername(), user.getUsername());
@@ -174,7 +161,6 @@ public class ProfileView extends BaseView {
             });
         } else {
             followButton = new JButton("Follow");
-            // Disabled if not logged in
             followButton.setEnabled(false);
         }
         
@@ -187,7 +173,6 @@ public class ProfileView extends BaseView {
         followButton.setBorderPainted(false);
         followButton.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         
-        // Add stats and follow button to a combined panel
         JPanel statsFollowPanel = new JPanel();
         statsFollowPanel.setLayout(new BoxLayout(statsFollowPanel, BoxLayout.Y_AXIS));
         statsFollowPanel.add(statsPanel);
@@ -196,7 +181,6 @@ public class ProfileView extends BaseView {
         
         headerPanel.add(topHeaderPanel);
         
-        // Profile name and bio panel
         JPanel profileNameAndBioPanel = new JPanel();
         profileNameAndBioPanel.setLayout(new BorderLayout());
         profileNameAndBioPanel.setBackground(new Color(249, 249, 249));
@@ -220,7 +204,7 @@ public class ProfileView extends BaseView {
     }
     
     /**
-     * Load the user's pictures into the grid
+     * Loads the user's pictures into the grid
      * 
      * @param username the username of the user
      */
@@ -233,7 +217,6 @@ public class ProfileView extends BaseView {
                     .getImage().getScaledInstance(GRID_IMAGE_SIZE, GRID_IMAGE_SIZE, Image.SCALE_SMOOTH));
             JLabel imageLabel = new JLabel(imageIcon);
             
-            // Make the image clickable
             imageLabel.addMouseListener(new MouseAdapter() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -249,28 +232,24 @@ public class ProfileView extends BaseView {
     }
     
     /**
-     * Display a full-sized image when clicked
+     * Displays a full-sized image when clicked
      * 
      * @param picture the picture to display
      */
     private void displayFullImage(Picture picture) {
-        // Create a dialog to show the full image
         JDialog dialog = new JDialog(this, picture.getCaption(), true);
         dialog.setLayout(new BorderLayout());
         
-        // Image
         ImageIcon imageIcon = new ImageIcon(picture.getImagePath());
         JLabel imageLabel = new JLabel(imageIcon);
         imageLabel.setHorizontalAlignment(JLabel.CENTER);
         
-        // Caption and likes
         JPanel infoPanel = new JPanel();
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.add(new JLabel("Posted by: " + picture.getUsername()));
         infoPanel.add(new JLabel(picture.getCaption()));
         infoPanel.add(new JLabel("Likes: " + picture.getLikesCount()));
         
-        // Like button
         JButton likeButton = new JButton("Like");
         likeButton.addActionListener(e -> {
             if (sessionController.isLoggedIn()) {
@@ -292,7 +271,7 @@ public class ProfileView extends BaseView {
     }
     
     /**
-     * Create a label for profile statistics
+     * Creates a label for profile statistics
      * 
      * @param number the number to display
      * @param text the text label

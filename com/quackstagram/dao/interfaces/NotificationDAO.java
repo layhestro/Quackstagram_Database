@@ -1,4 +1,3 @@
-// File: com/quackstagram/dao/interfaces/NotificationDAO.java
 package com.quackstagram.dao.interfaces;
 
 import com.quackstagram.model.Notification;
@@ -9,7 +8,7 @@ import java.util.List;
  */
 public interface NotificationDAO {
     /**
-     * Find all notifications for a receiver
+     * Retrieves all notifications for a receiver
      * 
      * @param username the username of the receiver
      * @return a list of notifications for the receiver
@@ -17,14 +16,14 @@ public interface NotificationDAO {
     List<Notification> findByReceiver(String username);
     
     /**
-     * Save a new notification
+     * Saves a new notification
      * 
      * @param notification the notification to save
      */
     void save(Notification notification);
     
     /**
-     * Delete a notification by ID
+     * Deletes a notification by ID
      * 
      * @param id the ID of the notification to delete
      */

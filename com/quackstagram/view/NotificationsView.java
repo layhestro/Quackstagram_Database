@@ -4,7 +4,7 @@ import com.quackstagram.controller.NotificationController;
 import com.quackstagram.controller.SessionController;
 import com.quackstagram.model.Notification;
 import com.quackstagram.model.NotificationType;
-import com.quackstagram.util.NavigationController;
+import com.quackstagram.controller.NavigationController;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,15 +35,16 @@ public class NotificationsView extends BaseView {
         initialize();
     }
 
+    /**
+     * Initializes the UI components
+     */
     @Override
     public void initialize() {
         getContentPane().removeAll();
         
-        // Header panel
         JPanel headerPanel = createHeaderPanel("Notifications");
         add(headerPanel, BorderLayout.NORTH);
         
-        // Content panel with scroll
         contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         JScrollPane scrollPane = new JScrollPane(contentPanel);
@@ -51,17 +52,18 @@ public class NotificationsView extends BaseView {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane, BorderLayout.CENTER);
         
-        // Navigation panel
         JPanel navigationPanel = createNavigationPanel();
         add(navigationPanel, BorderLayout.SOUTH);
         
-        // Load notifications
         loadNotifications();
         
         revalidate();
         repaint();
     }
 
+    /**
+     * Refreshes the view with current data
+     */
     @Override
     public void refreshView() {
         contentPanel.removeAll();
@@ -71,7 +73,7 @@ public class NotificationsView extends BaseView {
     }
     
     /**
-     * Load notifications for the current user
+     * Loads notifications for the current user
      */
     private void loadNotifications() {
         if (!sessionController.isLoggedIn()) {
@@ -93,7 +95,7 @@ public class NotificationsView extends BaseView {
     }
     
     /**
-     * Create a panel for displaying a notification
+     * Creates a panel for displaying a notification
      * 
      * @param notification the notification to display
      * @return a panel containing the notification
@@ -104,7 +106,6 @@ public class NotificationsView extends BaseView {
                 BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY),
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         
-        // Icon based on notification type
         JLabel iconLabel = new JLabel();
         if (notification.getType() == NotificationType.LIKE) {
             iconLabel.setText("❤");
@@ -117,7 +118,6 @@ public class NotificationsView extends BaseView {
         iconLabel.setFont(new Font("Arial", Font.PLAIN, 20));
         panel.add(iconLabel, BorderLayout.WEST);
         
-        // Notification message
         JPanel messagePanel = new JPanel(new BorderLayout());
         
         String message = formatNotificationMessage(notification);
@@ -137,7 +137,7 @@ public class NotificationsView extends BaseView {
     }
     
     /**
-     * Format a notification message based on its type
+     * Formats a notification message based on its type
      * 
      * @param notification the notification to format
      * @return a formatted message string
@@ -159,7 +159,7 @@ public class NotificationsView extends BaseView {
     }
     
     /**
-     * Format timestamp as "X days/hours/minutes ago"
+     * Formats timestamp as "X days/hours/minutes ago"
      * 
      * @param timestamp the timestamp to format
      * @return a formatted string representing time elapsed
@@ -182,7 +182,7 @@ public class NotificationsView extends BaseView {
     }
     
     /**
-     * Display a message when user is not logged in
+     * Displays a message when user is not logged in
      */
     private void displayLoginPrompt() {
         JPanel messagePanel = new JPanel(new BorderLayout());
@@ -202,7 +202,7 @@ public class NotificationsView extends BaseView {
     }
     
     /**
-     * Display a message when there are no notifications
+     * Displays a message when there are no notifications
      */
     private void displayEmptyNotificationsMessage() {
         JPanel messagePanel = new JPanel(new BorderLayout());

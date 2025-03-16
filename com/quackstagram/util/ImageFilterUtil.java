@@ -12,12 +12,10 @@ import java.util.function.Function;
  */
 public class ImageFilterUtil {
     
-    // Map of filter names to filter functions
     private static final Map<String, Function<BufferedImage, BufferedImage>> FILTERS = new HashMap<>();
     
     static {
-        // Initialize available filters
-        FILTERS.put("None", image -> image); // No filter
+        FILTERS.put("None", image -> image);
         FILTERS.put("Grayscale", ImageFilterUtil::applyGrayscale);
         FILTERS.put("Sepia", ImageFilterUtil::applySepia);
         FILTERS.put("Invert", ImageFilterUtil::applyInvert);
@@ -28,7 +26,7 @@ public class ImageFilterUtil {
     }
     
     /**
-     * Get all available filter names
+     * Gets all available filter names
      * 
      * @return array of filter names
      */
@@ -37,7 +35,7 @@ public class ImageFilterUtil {
     }
     
     /**
-     * Apply a named filter to an image
+     * Applies a named filter to an image
      * 
      * @param image the image to filter
      * @param filterName the name of the filter to apply
@@ -49,7 +47,10 @@ public class ImageFilterUtil {
     }
     
     /**
-     * Apply a grayscale filter
+     * Applies a grayscale filter
+     * 
+     * @param source the source image
+     * @return the filtered image
      */
     private static BufferedImage applyGrayscale(BufferedImage source) {
         BufferedImage result = new BufferedImage(
@@ -63,10 +64,8 @@ public class ImageFilterUtil {
                 int g = (rgb >> 8) & 0xff;
                 int b = rgb & 0xff;
                 
-                // Convert to grayscale using luminance method
                 int gray = (int)(0.299 * r + 0.587 * g + 0.114 * b);
                 
-                // Set the new RGB
                 int newRGB = (alpha << 24) | (gray << 16) | (gray << 8) | gray;
                 result.setRGB(x, y, newRGB);
             }
@@ -76,7 +75,10 @@ public class ImageFilterUtil {
     }
     
     /**
-     * Apply a sepia filter
+     * Applies a sepia filter
+     * 
+     * @param source the source image
+     * @return the filtered image
      */
     private static BufferedImage applySepia(BufferedImage source) {
         BufferedImage result = new BufferedImage(
@@ -90,17 +92,14 @@ public class ImageFilterUtil {
                 int g = (rgb >> 8) & 0xff;
                 int b = rgb & 0xff;
                 
-                // Sepia tone formula
                 int newR = (int)(0.393 * r + 0.769 * g + 0.189 * b);
                 int newG = (int)(0.349 * r + 0.686 * g + 0.168 * b);
                 int newB = (int)(0.272 * r + 0.534 * g + 0.131 * b);
                 
-                // Clamp values
                 newR = Math.min(255, newR);
                 newG = Math.min(255, newG);
                 newB = Math.min(255, newB);
                 
-                // Set the new RGB
                 int newRGB = (alpha << 24) | (newR << 16) | (newG << 8) | newB;
                 result.setRGB(x, y, newRGB);
             }
@@ -110,7 +109,10 @@ public class ImageFilterUtil {
     }
     
     /**
-     * Apply an invert filter
+     * Applies an invert filter
+     * 
+     * @param source the source image
+     * @return the filtered image
      */
     private static BufferedImage applyInvert(BufferedImage source) {
         BufferedImage result = new BufferedImage(
@@ -124,7 +126,6 @@ public class ImageFilterUtil {
                 int g = 255 - ((rgb >> 8) & 0xff);
                 int b = 255 - (rgb & 0xff);
                 
-                // Set the new RGB
                 int newRGB = (alpha << 24) | (r << 16) | (g << 8) | b;
                 result.setRGB(x, y, newRGB);
             }
@@ -134,7 +135,10 @@ public class ImageFilterUtil {
     }
     
     /**
-     * Apply a blur filter
+     * Applies a blur filter
+     * 
+     * @param source the source image
+     * @return the filtered image
      */
     private static BufferedImage applyBlur(BufferedImage source) {
         float[] blurKernel = {
@@ -149,7 +153,10 @@ public class ImageFilterUtil {
     }
     
     /**
-     * Apply a sharpen filter
+     * Applies a sharpen filter
+     * 
+     * @param source the source image
+     * @return the filtered image
      */
     private static BufferedImage applySharpen(BufferedImage source) {
         float[] sharpenKernel = {
@@ -164,7 +171,10 @@ public class ImageFilterUtil {
     }
     
     /**
-     * Apply a warm filter (increase red, decrease blue)
+     * Applies a warm filter (increase red, decrease blue)
+     * 
+     * @param source the source image
+     * @return the filtered image
      */
     private static BufferedImage applyWarm(BufferedImage source) {
         BufferedImage result = new BufferedImage(
@@ -178,11 +188,9 @@ public class ImageFilterUtil {
                 int g = (rgb >> 8) & 0xff;
                 int b = rgb & 0xff;
                 
-                // Add warmth by increasing red and decreasing blue
                 r = Math.min(255, r + 30);
                 b = Math.max(0, b - 20);
                 
-                // Set the new RGB
                 int newRGB = (alpha << 24) | (r << 16) | (g << 8) | b;
                 result.setRGB(x, y, newRGB);
             }
@@ -192,7 +200,10 @@ public class ImageFilterUtil {
     }
     
     /**
-     * Apply a cool filter (increase blue, decrease red)
+     * Applies a cool filter (increase blue, decrease red)
+     * 
+     * @param source the source image
+     * @return the filtered image
      */
     private static BufferedImage applyCool(BufferedImage source) {
         BufferedImage result = new BufferedImage(
@@ -206,11 +217,9 @@ public class ImageFilterUtil {
                 int g = (rgb >> 8) & 0xff;
                 int b = rgb & 0xff;
                 
-                // Add coolness by increasing blue and decreasing red
                 r = Math.max(0, r - 20);
                 b = Math.min(255, b + 30);
                 
-                // Set the new RGB
                 int newRGB = (alpha << 24) | (r << 16) | (g << 8) | b;
                 result.setRGB(x, y, newRGB);
             }

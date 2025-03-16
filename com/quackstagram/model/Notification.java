@@ -1,4 +1,3 @@
-// File: com/quackstagram/model/Notification.java
 package com.quackstagram.model;
 
 import java.time.LocalDateTime;
@@ -9,12 +8,18 @@ import java.time.LocalDateTime;
 public class Notification {
     private final String receiverUsername;
     private final String senderUsername;
-    private final String imageId; // Optional, can be null for follow notifications
+    private final String imageId;
     private final LocalDateTime timestamp;
     private final NotificationType type;
 
     /**
      * Constructor with all fields
+     * 
+     * @param receiverUsername the username of the receiver
+     * @param senderUsername the username of the sender
+     * @param imageId the ID of the image (null for follow notifications)
+     * @param timestamp the timestamp of the notification
+     * @param type the type of notification
      */
     public Notification(String receiverUsername, String senderUsername, String imageId, 
                        LocalDateTime timestamp, NotificationType type) {
@@ -25,15 +30,45 @@ public class Notification {
         this.type = type;
     }
 
-    // Getter methods
+    /**
+     * Gets the username of the receiver
+     * 
+     * @return the receiver username
+     */
     public String getReceiverUsername() { return receiverUsername; }
+    
+    /**
+     * Gets the username of the sender
+     * 
+     * @return the sender username
+     */
     public String getSenderUsername() { return senderUsername; }
+    
+    /**
+     * Gets the ID of the image
+     * 
+     * @return the image ID
+     */
     public String getImageId() { return imageId; }
+    
+    /**
+     * Gets the timestamp of the notification
+     * 
+     * @return the timestamp
+     */
     public LocalDateTime getTimestamp() { return timestamp; }
+    
+    /**
+     * Gets the type of notification
+     * 
+     * @return the notification type
+     */
     public NotificationType getType() { return type; }
 
     /**
-     * Convert notification to string representation for storage
+     * Converts notification to string representation for storage
+     * 
+     * @return string representation of the notification
      */
     @Override
     public String toString() {

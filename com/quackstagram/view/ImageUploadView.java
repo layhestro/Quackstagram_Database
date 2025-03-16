@@ -3,7 +3,7 @@ package com.quackstagram.view;
 import com.quackstagram.controller.PictureController;
 import com.quackstagram.controller.SessionController;
 import com.quackstagram.util.ImageFilterUtil;
-import com.quackstagram.util.NavigationController;
+import com.quackstagram.controller.NavigationController;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -42,22 +42,21 @@ public class ImageUploadView extends BaseView {
         initialize();
     }
 
+    /**
+     * Initializes the UI components
+     */
     @Override
     public void initialize() {
         getContentPane().removeAll();
         
-        // Header panel
         JPanel headerPanel = createHeaderPanel("Upload Image");
         add(headerPanel, BorderLayout.NORTH);
         
-        // Content panel
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         
-        // Only allow uploads if logged in
         if (sessionController.isLoggedIn()) {
-            // Create a panel for the image preview with fixed size
             JPanel previewPanel = new JPanel(new BorderLayout());
             previewPanel.setPreferredSize(new Dimension(WIDTH - 40, HEIGHT / 3));
             previewPanel.setMaximumSize(new Dimension(WIDTH - 40, HEIGHT / 3));
@@ -65,7 +64,6 @@ public class ImageUploadView extends BaseView {
             previewPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
             previewPanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
             
-            // Image preview
             imagePreviewLabel = new JLabel("No image selected", JLabel.CENTER);
             imagePreviewLabel.setHorizontalAlignment(JLabel.CENTER);
             imagePreviewLabel.setVerticalAlignment(JLabel.CENTER);
@@ -73,10 +71,8 @@ public class ImageUploadView extends BaseView {
             
             contentPanel.add(previewPanel);
             
-            // Spacer
             contentPanel.add(Box.createVerticalStrut(10));
             
-            // Upload and filter section
             JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
             controlPanel.setMaximumSize(new Dimension(WIDTH - 20, 40));
             controlPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -85,7 +81,6 @@ public class ImageUploadView extends BaseView {
             uploadButton.addActionListener(this::handleImageSelection);
             controlPanel.add(uploadButton);
             
-            // Filter dropdown
             JLabel filterLabel = new JLabel("Filter:");
             controlPanel.add(filterLabel);
             
@@ -99,10 +94,8 @@ public class ImageUploadView extends BaseView {
             
             contentPanel.add(controlPanel);
             
-            // Spacer
             contentPanel.add(Box.createVerticalStrut(10));
             
-            // Caption panel
             JPanel captionPanel = new JPanel();
             captionPanel.setLayout(new BoxLayout(captionPanel, BoxLayout.Y_AXIS));
             captionPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -125,10 +118,8 @@ public class ImageUploadView extends BaseView {
             
             contentPanel.add(captionPanel);
             
-            // Spacer
             contentPanel.add(Box.createVerticalStrut(10));
             
-            // Save button
             JPanel saveButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
             saveButtonPanel.setMaximumSize(new Dimension(WIDTH - 20, 40));
             saveButtonPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -139,14 +130,12 @@ public class ImageUploadView extends BaseView {
             
             contentPanel.add(saveButtonPanel);
         } else {
-            // Login prompt
             displayLoginPrompt(contentPanel);
         }
         
         JScrollPane scrollPane = new JScrollPane(contentPanel);
         add(scrollPane, BorderLayout.CENTER);
         
-        // Navigation panel
         JPanel navigationPanel = createNavigationPanel();
         add(navigationPanel, BorderLayout.SOUTH);
         
@@ -154,35 +143,36 @@ public class ImageUploadView extends BaseView {
         repaint();
     }
 
+    /**
+     * Refreshes the view with current data
+     */
     @Override
     public void refreshView() {
         initialize();
     }
     
-        /**
-     * Apply the currently selected filter to the image
+    /**
+     * Applies the currently selected filter to the image
      */
     private void applyCurrentFilter() {
         if (originalImage == null) {
             return;
         }
         
-        // Apply the selected filter
         filteredImage = ImageFilterUtil.applyFilter(originalImage, currentFilter);
         
-        // Update preview
         updatePreview(filteredImage);
     }
 
-        /**
-     * Update the preview label with the provided image
+    /**
+     * Updates the preview label with the provided image
+     * 
+     * @param image the image to display
      */
     private void updatePreview(BufferedImage image) {
-        // Define the maximum preview dimensions
-        int previewWidth = WIDTH - 60;  // Accounting for padding and borders
+        int previewWidth = WIDTH - 60;
         int previewHeight = HEIGHT / 3 - 20;
         
-        // Calculate scaled dimensions while preserving aspect ratio
         double widthRatio = (double) previewWidth / image.getWidth();
         double heightRatio = (double) previewHeight / image.getHeight();
         double scale = Math.min(widthRatio, heightRatio);
@@ -192,11 +182,13 @@ public class ImageUploadView extends BaseView {
         
         Image scaledImage = image.getScaledInstance(scaledWidth, scaledHeight, Image.SCALE_SMOOTH);
         imagePreviewLabel.setIcon(new ImageIcon(scaledImage));
-        imagePreviewLabel.setText(""); // Clear text when image is displayed
+        imagePreviewLabel.setText("");
     }
 
     /**
-     * Handle image selection button click
+     * Handles image selection button click
+     * 
+     * @param event the action event
      */
     private void handleImageSelection(ActionEvent event) {
         JFileChooser fileChooser = new JFileChooser();
@@ -211,14 +203,11 @@ public class ImageUploadView extends BaseView {
             selectedImageFile = fileChooser.getSelectedFile();
             
             try {
-                // Load the original image
                 originalImage = ImageIO.read(selectedImageFile);
                 
-                // Reset filter to "None"
                 filterComboBox.setSelectedItem("None");
                 currentFilter = "None";
                 
-                // Apply current filter (which is "None" at this point)
                 applyCurrentFilter();
             } catch (IOException e) {
                 JOptionPane.showMessageDialog(this, 
@@ -232,8 +221,10 @@ public class ImageUploadView extends BaseView {
         }
     }
     
-/**
-     * Handle image post button click
+    /**
+     * Handles image post button click
+     * 
+     * @param event the action event
      */
     private void handleImagePost(ActionEvent event) {
         if (originalImage == null) {
@@ -245,10 +236,9 @@ public class ImageUploadView extends BaseView {
         
         String caption = captionTextArea.getText();
         if (caption.trim().isEmpty()) {
-            caption = "No caption"; // Default caption if empty
+            caption = "No caption";
         }
         
-        // Save the filtered image to a temporary file
         try {
             File tempFile = File.createTempFile("filtered_", ".png");
             ImageIO.write(filteredImage, "png", tempFile);
@@ -263,7 +253,6 @@ public class ImageUploadView extends BaseView {
                         "Image uploaded successfully!", 
                         "Success", JOptionPane.INFORMATION_MESSAGE);
                 
-                // Reset form
                 selectedImageFile = null;
                 originalImage = null;
                 filteredImage = null;
@@ -272,7 +261,6 @@ public class ImageUploadView extends BaseView {
                 captionTextArea.setText("");
                 filterComboBox.setSelectedItem("None");
                 
-                // Navigate to home to see the new post
                 navigateTo("home");
             } else {
                 JOptionPane.showMessageDialog(this, 
@@ -280,7 +268,6 @@ public class ImageUploadView extends BaseView {
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
             
-            // Clean up temp file
             tempFile.delete();
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, 
@@ -290,7 +277,7 @@ public class ImageUploadView extends BaseView {
     }
     
     /**
-     * Display a login prompt when user is not logged in
+     * Displays a login prompt when user is not logged in
      * 
      * @param panel the panel to add the login prompt to
      */

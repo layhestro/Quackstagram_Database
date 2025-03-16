@@ -18,6 +18,12 @@ public class Picture {
 
     /**
      * Constructor with all required fields
+     * 
+     * @param imageId the unique ID of the image
+     * @param username the username of the owner
+     * @param imagePath the file path to the image
+     * @param caption the caption for the image
+     * @param timestamp the timestamp when the image was posted
      */
     public Picture(String imageId, String username, String imagePath, String caption, LocalDateTime timestamp) {
         this.imageId = imageId;
@@ -30,26 +36,67 @@ public class Picture {
     }
 
     /**
-     * Add a comment to the picture
+     * Adds a comment to the picture
+     * 
+     * @param comment the comment to add
      */
     public void addComment(String comment) {
         comments.add(comment);
     }
 
     /**
-     * Increment likes count
+     * Increments the like count
      */
     public void like() {
         likesCount++;
     }
 
-    // Getter methods
+    /**
+     * Gets the image ID
+     * 
+     * @return the image ID
+     */
     public String getImageId() { return imageId; }
+    
+    /**
+     * Gets the username of the owner
+     * 
+     * @return the username
+     */
     public String getUsername() { return username; }
+    
+    /**
+     * Gets the file path to the image
+     * 
+     * @return the image path
+     */
     public String getImagePath() { return imagePath; }
+    
+    /**
+     * Gets the caption
+     * 
+     * @return the caption
+     */
     public String getCaption() { return caption; }
+    
+    /**
+     * Gets the number of likes
+     * 
+     * @return the likes count
+     */
     public int getLikesCount() { return likesCount; }
+    
+    /**
+     * Gets the timestamp when the image was posted
+     * 
+     * @return the timestamp
+     */
     public LocalDateTime getTimestamp() { return timestamp; }
+    
+    /**
+     * Gets the list of comments
+     * 
+     * @return the comments list
+     */
     public List<String> getComments() { return comments; }
 }
-

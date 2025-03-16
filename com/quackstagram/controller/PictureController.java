@@ -1,4 +1,3 @@
-// File: com/quackstagram/controller/PictureController.java
 package com.quackstagram.controller;
 
 import com.quackstagram.dao.interfaces.PictureDAO;
@@ -38,7 +37,7 @@ public class PictureController {
     }
     
     /**
-     * Get pictures for a specific user
+     * Retrieves pictures for a specific user
      * 
      * @param username the username of the user
      * @return a list of pictures from the user
@@ -48,7 +47,7 @@ public class PictureController {
     }
     
     /**
-     * Get pictures for the user's home feed (from followed users)
+     * Retrieves pictures for the user's home feed from followed users
      * 
      * @param username the username of the user
      * @return a list of pictures from followed users
@@ -58,7 +57,7 @@ public class PictureController {
     }
     
     /**
-     * Get all pictures for explore view
+     * Retrieves all pictures for the explore view
      * 
      * @return a list of all pictures
      */
@@ -67,7 +66,7 @@ public class PictureController {
     }
     
     /**
-     * Save a new picture
+     * Saves a new picture
      * 
      * @param username the username of the user posting the picture
      * @param imageFile the image file
@@ -76,21 +75,16 @@ public class PictureController {
      */
     public boolean savePicture(String username, File imageFile, String caption) {
         try {
-            // Generate image ID
             String imageId = username + "_" + getNextImageId(username);
             
-            // Create picture object
             Picture picture = new Picture(imageId, username, uploadedImagesPath + imageId + ".png", 
                                         caption, LocalDateTime.now());
             
-            // Save image file
             Path destPath = Paths.get(uploadedImagesPath, imageId + ".png");
             Files.copy(imageFile.toPath(), destPath, StandardCopyOption.REPLACE_EXISTING);
             
-            // Save picture metadata
             pictureDAO.save(picture);
             
-            // Update user post count
             User user = userDAO.findByUsername(username);
             if (user != null) {
                 user.setPostCount(pictureDAO.findByUsername(username).size());
@@ -105,7 +99,7 @@ public class PictureController {
     }
     
     /**
-     * Like a picture
+     * Adds a like to a picture and creates a notification
      * 
      * @param username the username of the user liking the picture
      * @param imageId the ID of the picture being liked
@@ -113,17 +107,15 @@ public class PictureController {
     public void likePicture(String username, String imageId) {
         Picture picture = pictureDAO.findById(imageId);
         if (picture != null) {
-            // Increment likes
             picture.like();
             pictureDAO.update(picture);
             
-            // Create notification
             notificationController.createLikeNotification(username, picture.getUsername(), imageId);
         }
     }
     
     /**
-     * Get the next available image ID for a user
+     * Generates the next available image ID for a user
      * 
      * @param username the username of the user
      * @return the next available ID
@@ -148,7 +140,6 @@ public class PictureController {
                             maxId = id;
                         }
                     } catch (NumberFormatException ex) {
-                        // Ignore filenames that do not have a valid numeric ID
                     }
                 }
             }

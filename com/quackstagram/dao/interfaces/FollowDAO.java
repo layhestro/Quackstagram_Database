@@ -1,4 +1,3 @@
-// File: com/quackstagram/dao/interfaces/FollowDAO.java
 package com.quackstagram.dao.interfaces;
 
 import java.io.IOException;
@@ -8,7 +7,7 @@ import java.util.List;
  */
 public interface FollowDAO {
     /**
-     * Follow a user
+     * Creates a following relationship between users
      * 
      * @param follower the username of the follower
      * @param followed the username of the followed user
@@ -17,7 +16,7 @@ public interface FollowDAO {
     void follow(String follower, String followed) throws IOException;
     
     /**
-     * Unfollow a user
+     * Removes a following relationship between users
      * 
      * @param follower the username of the follower
      * @param followed the username of the followed user
@@ -26,7 +25,7 @@ public interface FollowDAO {
     void unfollow(String follower, String followed) throws IOException;
     
     /**
-     * Get all followers of a user
+     * Retrieves all followers of a user
      * 
      * @param username the username of the user
      * @return a list of usernames of followers
@@ -35,7 +34,7 @@ public interface FollowDAO {
     List<String> getFollowers(String username) throws IOException;
     
     /**
-     * Get all users that a user is following
+     * Retrieves all users that a user is following
      * 
      * @param username the username of the user
      * @return a list of usernames of followed users
@@ -44,7 +43,7 @@ public interface FollowDAO {
     List<String> getFollowing(String username) throws IOException;
     
     /**
-     * Check if a user is following another
+     * Checks if a user is following another user
      * 
      * @param follower the username of the follower
      * @param followed the username of the followed user
