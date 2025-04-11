@@ -156,25 +156,27 @@ public class FileUserDAO implements UserDAO {
     @Override
     public boolean verifyCredentials(String username, String password) {
         try {
+            // Log the verification attempt
             System.out.println("Verifying credentials for: " + username);
             
+            // Find line with username
             List<String> lines = FileUtil.readMatchingLines(credentialsFilePath, 
                     line -> line.startsWith(username + ":"));
             
             if (!lines.isEmpty()) {
                 String line = lines.get(0);
-                System.out.println("Found credential line: " + line);
+                System.out.println("Found credential line: " + line); 
                 
                 String[] parts = line.split(":");
-                System.out.println("Parts length: " + parts.length);
+                System.out.println("Parts length: " + parts.length); 
                 
-                if (parts.length >= 4) {
+                if (parts.length >= 3) {
                     String storedHash = parts[1];
                     String storedSalt = parts[2];
                     boolean result = PasswordUtil.verifyPassword(password, storedHash, storedSalt);
-                    System.out.println("New format verification result: " + result);
+                    System.out.println("Verification result: " + result);
                     return result;
-                } 
+                }
             } 
             else {
                 System.out.println("No credentials found for: " + username);
