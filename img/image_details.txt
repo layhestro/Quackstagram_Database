@@ -10,3 +10,4 @@ ImageID: s_1, Username: s, Bio: d, Timestamp: 2025-03-14 21:38:24, Likes: 1
 ImageID: Xylo_3, Username: Xylo, Bio: q, Timestamp: 2025-03-15 14:08:00, Likes: 0
 ImageID: Xylo_4, Username: Xylo, Bio: s, Timestamp: 2025-03-15 15:38:01, Likes: 1
 ImageID: Xylo_5, Username: Xylo, Bio: aaa, Timestamp: 2025-03-15 23:03:29, Likes: 0
+ImageID: Gregoire_1, Username: Gregoire, Bio: No caption, Timestamp: 2025-03-16 21:01:19, Likes: 0
