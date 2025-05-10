@@ -36,6 +36,7 @@ public class QuackstagramApp {
      * Initializes the application components
      */
     public static void initializeApplication() {
+        // Initialize DAOs with database implementations
         UserDAO userDAO = new DatabaseUserDAO();
         PictureDAO pictureDAO = new DatabasePictureDAO();
         NotificationDAO notificationDAO = new DatabaseNotificationDAO();
