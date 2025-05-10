@@ -104,6 +104,20 @@ public class User {
     public int getFollowingCount() { return followingCount; }
     
     /**
+     * Gets the password hash
+     * 
+     * @return the password hash
+     */
+    public String getPasswordHash() { return passwordHash; }
+
+    /**
+     * Gets the salt
+     * 
+     * @return the salt
+     */
+    public String getSalt() { return salt; }
+    
+    /**
      * Verifies a password against the stored hash
      * 
      * @param password the password to verify

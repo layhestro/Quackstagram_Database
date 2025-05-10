@@ -54,8 +54,8 @@ public class DatabaseConnectionManager {
             // Fallback to default configuration
             System.err.println("Warning: Could not load database configuration file. Using defaults.");
             jdbcUrl = "jdbc:mysql://localhost:3306/quackstagram?useSSL=false&serverTimezone=UTC";
-            username = "quackstagram_user";
-            password = "quackstagram_pass";
+            username = "user";
+            password = "pass";
         }
     }
     

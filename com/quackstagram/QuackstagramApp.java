@@ -36,10 +36,10 @@ public class QuackstagramApp {
      * Initializes the application components
      */
     public static void initializeApplication() {
-        UserDAO userDAO = new FileUserDAO();
-        PictureDAO pictureDAO = new FilePictureDAO();
-        NotificationDAO notificationDAO = new FileNotificationDAO();
-        FollowDAO followDAO = new FileFollowDAO();
+        UserDAO userDAO = new DatabaseUserDAO();
+        PictureDAO pictureDAO = new DatabasePictureDAO();
+        NotificationDAO notificationDAO = new DatabaseNotificationDAO();
+        FollowDAO followDAO = new DatabaseFollowDAO();
         
         UserController userController = new UserController(userDAO, followDAO);
         NotificationController notificationController = new NotificationController(notificationDAO);
@@ -48,6 +48,7 @@ public class QuackstagramApp {
         
         NavigationController navigationController = new NavigationController();
         
+        // Register views as before
         AuthView authView = new AuthView(sessionController, navigationController, userController);
         ProfileView profileView = new ProfileView(sessionController, navigationController, userController, pictureController);
         HomeView homeView = new HomeView(sessionController, navigationController, pictureController);
@@ -61,13 +62,6 @@ public class QuackstagramApp {
         navigationController.registerView("notifications", notificationsView);
         navigationController.registerView("explore", exploreView);
         navigationController.registerView("upload", imageUploadView);
-        
-        try {
-            Files.write(Paths.get("data/users.txt"), new byte[0]);
-        } 
-        catch (IOException e) {
-            e.printStackTrace();
-        }
         
         navigationController.navigateTo("auth");
     }
