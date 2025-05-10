@@ -1,9 +1,8 @@
--- schema.sql for Quackstagram Database
--- Complete schema with all improvements incorporated
+-- Simple schema.sql for Quackstagram Database
+-- 3NF compliant
 
 -- Drop existing tables if they exist
 DROP TABLE IF EXISTS FollowerHistory;
-DROP TABLE IF EXISTS SystemLogs;
 DROP TABLE IF EXISTS Comments;
 DROP TABLE IF EXISTS Likes;
 DROP TABLE IF EXISTS Notifications;
@@ -17,10 +16,7 @@ CREATE TABLE Users (
     bio TEXT,
     passwordHash VARCHAR(255) NOT NULL,
     salt VARCHAR(50) NOT NULL,
-    profileImagePath VARCHAR(255) DEFAULT 'img/logos/DACS.png',
-    postsCount INT DEFAULT 0 CHECK (postsCount >= 0),
-    followersCount INT DEFAULT 0 CHECK (followersCount >= 0),
-    followingCount INT DEFAULT 0 CHECK (followingCount >= 0)
+    profileImagePath VARCHAR(255) DEFAULT 'img/logos/DACS.png'
 );
 
 -- Create Pictures table
@@ -29,13 +25,9 @@ CREATE TABLE Pictures (
     username VARCHAR(50) NOT NULL,
     imagePath VARCHAR(255) NOT NULL,
     caption TEXT,
-    likesCount INT DEFAULT 0 CHECK (likesCount >= 0),
     timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (username) REFERENCES Users(username) ON DELETE CASCADE
 );
-
--- Create index on Pictures timestamp (for views and analytics)
-CREATE INDEX idx_pictures_timestamp ON Pictures(timestamp, username);
 
 -- Create Follows table
 CREATE TABLE Follows (
@@ -60,9 +52,6 @@ CREATE TABLE Notifications (
     FOREIGN KEY (imageId) REFERENCES Pictures(imageId) ON DELETE SET NULL
 );
 
--- Create index on Notifications for performance
-CREATE INDEX idx_notifications_receiver_timestamp ON Notifications(receiverUsername, timestamp);
-
 -- Create Likes table
 CREATE TABLE Likes (
     username VARCHAR(50) NOT NULL,
@@ -84,9 +73,6 @@ CREATE TABLE Comments (
     FOREIGN KEY (imageId) REFERENCES Pictures(imageId) ON DELETE CASCADE
 );
 
--- Create index on Comments imageId (for views and content analysis)
-CREATE INDEX idx_comments_imageid ON Comments(imageId);
-
 -- Create FollowerHistory table for analytics
 CREATE TABLE FollowerHistory (
     historyId INT AUTO_INCREMENT PRIMARY KEY,
@@ -94,14 +80,4 @@ CREATE TABLE FollowerHistory (
     followerCount INT NOT NULL CHECK (followerCount >= 0),
     timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (username) REFERENCES Users(username) ON DELETE CASCADE
-);
-
--- Create SystemLogs table for trigger logging
-CREATE TABLE SystemLogs (
-    log_id INT AUTO_INCREMENT PRIMARY KEY,
-    event_type VARCHAR(50) NOT NULL,
-    description TEXT NOT NULL,
-    timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    INDEX idx_system_logs_type (event_type),
-    INDEX idx_system_logs_time (timestamp)
 );
