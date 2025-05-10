@@ -9,7 +9,6 @@
             "name": "QuackstagramApp",
             "request": "launch",
             "mainClass": "com.quackstagram.QuackstagramApp",
-            "projectName": "Quackstagram_Database_47425066"
         }
     ]
 }
