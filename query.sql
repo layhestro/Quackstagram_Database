@@ -193,34 +193,34 @@ ORDER BY u.username;
 
 -- 19. Display the user with the greatest increase in followers in the last X days
 SELECT 
-    username,
-    (
-        -- Current follower count
-        SELECT followersCount FROM Users WHERE username = fh_end.username
-    ) - (
-        -- Follower count X days ago
-        SELECT followerCount
-        FROM FollowerHistory
-        WHERE username = fh_end.username
-        AND timestamp <= DATE_SUB(CURRENT_DATE(), INTERVAL ? DAY) -- Replace ? with days parameter
-        ORDER BY timestamp DESC
-        LIMIT 1
-    ) AS follower_increase
-FROM (
-    SELECT DISTINCT username 
-    FROM FollowerHistory 
-    WHERE timestamp >= DATE_SUB(CURRENT_DATE(), INTERVAL ? DAY)
-) fh_end
+    fh1.username,
+    fh1.followerCount - fh2.followerCount AS follower_increase
+FROM FollowerHistory fh1
+JOIN (
+    SELECT fh_outer.username, fh_outer.followerCount
+    FROM FollowerHistory fh_outer
+    WHERE fh_outer.timestamp <= DATE_SUB(NOW(), INTERVAL X DAY)
+    AND fh_outer.timestamp = (
+        SELECT MAX(fh_inner.timestamp)
+        FROM FollowerHistory fh_inner
+        WHERE fh_inner.username = fh_outer.username
+        AND fh_inner.timestamp <= DATE_SUB(NOW(), INTERVAL X DAY)
+    )
+) fh2 ON fh1.username = fh2.username
+WHERE fh1.timestamp = (
+    SELECT MAX(timestamp)
+    FROM FollowerHistory
+    WHERE username = fh1.username
+)
 ORDER BY follower_increase DESC
 LIMIT 1;
 
 -- 20. Find users who are followed by more than X% of the platform users
 SELECT 
-    f.followed AS username,
-    COUNT(DISTINCT f.follower) AS follower_count,
+    u.username,
+    u.followersCount,
     (SELECT COUNT(*) FROM Users) AS total_users,
-    ROUND(COUNT(DISTINCT f.follower) * 100 / (SELECT COUNT(*) FROM Users), 2) AS percentage
-FROM Follows f
-GROUP BY f.followed
-HAVING percentage > ? -- Replace ? with percentage parameter
-ORDER BY percentage DESC;
+    (u.followersCount * 100.0 / (SELECT COUNT(*) FROM Users)) AS percent_followed
+FROM Users u
+WHERE (u.followersCount * 100.0 / (SELECT COUNT(*) FROM Users)) > X
+ORDER BY percent_followed DESC;
