@@ -9,6 +9,10 @@
             "name": "QuackstagramApp",
             "request": "launch",
             "mainClass": "com.quackstagram.QuackstagramApp",
+            "classpath": [
+                "${workspaceFolder}/bin",
+                "${workspaceFolder}/lib/mysql-connector-j.jar"
+            ]
         }
     ]
 }

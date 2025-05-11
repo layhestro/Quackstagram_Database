@@ -1,3 +1,13 @@
+-- Create database if it doesn't exist
+CREATE DATABASE IF NOT EXISTS quackstagram;
+USE quackstagram;
+
+-- Create user if it doesn't exist (MariaDB syntax)
+-- First check if the user exists to avoid errors
+CREATE USER IF NOT EXISTS 'user'@'localhost' IDENTIFIED BY 'pass';
+GRANT ALL PRIVILEGES ON quackstagram.* TO 'user'@'localhost';
+FLUSH PRIVILEGES;
+
 -- Simple schema.sql for Quackstagram Database
 -- 3NF compliant
 
