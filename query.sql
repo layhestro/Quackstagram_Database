@@ -134,7 +134,7 @@ SELECT
     p.username,
     COUNT(DISTINCT p.imageId) as post_count,
     COUNT(l.username) as total_likes,
-    COUNT(l.username) / COUNT(DISTINCT p.imageId) as avg_likes_per_post
+    COUNT(l.username) * 1.0 / COUNT(DISTINCT p.imageId) as avg_likes_per_post
 FROM 
     Pictures p
 LEFT JOIN 
@@ -166,14 +166,14 @@ HAVING
 
 -- 14. List the users who have liked every post of a specific user
 SELECT 
-    l.username as fan
+    u.username as fan
 FROM 
     Users u
 WHERE 
     NOT EXISTS (
         SELECT p.imageId
         FROM Pictures p
-        WHERE p.username = 'Lorin'  -- Replace with target username
+        WHERE p.username = 'Lorin'
         AND NOT EXISTS (
             SELECT 1
             FROM Likes l
@@ -182,7 +182,7 @@ WHERE
         )
     )
 AND 
-    EXISTS (SELECT 1 FROM Pictures WHERE username = 'Lorin');  -- Ensure target has posts
+    EXISTS (SELECT 1 FROM Pictures WHERE username = 'Lorin');
 
 -- 15. Display the most popular post of each user (based on likes)
 WITH PostLikes AS (
@@ -216,8 +216,8 @@ SELECT
     (SELECT COUNT(*) FROM Follows WHERE follower = u.username) as following_count,
     CASE 
         WHEN (SELECT COUNT(*) FROM Follows WHERE follower = u.username) = 0 THEN 0
-        ELSE (SELECT COUNT(*) FROM Follows WHERE followed = u.username) / 
-             (SELECT COUNT(*) FROM Follows WHERE follower = u.username)
+        ELSE (SELECT COUNT(*) FROM Follows WHERE followed = u.username) * 1.0 / 
+            (SELECT COUNT(*) FROM Follows WHERE follower = u.username)
     END as ratio
 FROM 
     Users u
