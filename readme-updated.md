@@ -60,16 +60,32 @@ jdbc.password=pass
 
 ### 3. JDBC Driver
 
-Download and add the MySQL/MariaDB JDBC driver:
+the MySQL/MariaDB JDBC driver is already in the project in the lib folder
 
-```bash
-# Option 1: Download directly
-wget https://repo1.maven.org/maven2/com/mysql/mysql-connector-j/8.0.33/mysql-connector-j-8.0.33.jar -O lib/mysql-connector-j.jar
+## SQL Integration Implementation
 
-# Option 2: Install system package
-sudo apt install libmariadb-java
-# Then link or copy from /usr/share/java/mariadb-java-client.jar to lib/
-```
+The application is designed with a clean separation between business logic and data access. Here's where to look to understand the SQL integration:
+
+1. **Database Connection Management**:
+   - `com.quackstagram.util.DatabaseConnectionManager` - Singleton class that handles database connections using the properties file
+
+2. **DAO Implementations**:
+   - `com.quackstagram.dao.impl.Database*DAO.java` files - Contains the SQL queries and JDBC implementation
+   - Notable examples:
+     - `DatabaseUserDAO.java` - User authentication and profile management
+     - `DatabasePictureDAO.java` - Image storage and retrieval
+     - `DatabaseNotificationDAO.java` - Social interaction notifications
+
+3. **SQL Files**:
+   - `schema.sql` - Database structure, tables, and initial data
+   - `triggers.sql` - Database triggers for notifications and analytics
+   - `view.sql` - Optimized views for common complex queries
+   - `query.sql` - Collection of analytical and data retrieval queries
+
+4. **Application Integration**:
+   - `com.quackstagram.QuackstagramApp.java` - Shows how the application initializes with database implementations
+
+The code supports both file-based storage (for testing) and database storage (for production) through the same interfaces, demonstrating the Strategy pattern for data access.
 
 ## Building and Running
 
@@ -136,19 +152,14 @@ com.quackstagram
 4. Like posts and follow other users
 5. View your profile and notifications
 
-## Data Storage
-
-Quackstagram supports two storage options:
-- **Database storage** (MariaDB): Primary storage method for production use
-- **File-based storage**: Files in `data/` and `img/` directories (fallback option)
 
 ## Test Accounts
 
 You can log in with these pre-configured accounts:
-- Username: Xylo, Password: password123
-- Username: Lorin, Password: password123
-- Username: Zara, Password: password123
-- Username: Mystar, Password: password123
+- Username: Xylo, Password: Password
+- Username: Lorin, Password: Password
+- Username: Zara, Password: Password
+- Username: Mystar, Password: Password
 
 ## Troubleshooting
 
