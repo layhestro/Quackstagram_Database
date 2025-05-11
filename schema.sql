@@ -95,13 +95,12 @@ CREATE TABLE FollowerHistory (
 -- Insert test data
 
 -- Insert test users
--- Note: Passwords are 'password123' hashed with SHA-256 and salt
+-- Note: Passwords are 'Password' hashed with SHA-256 and salt
 INSERT INTO Users (username, bio, passwordHash, salt, profileImagePath) VALUES
-('Xylo', 'Fierce warrior, not solo', 'Ywp+k/lvU0hXIvZaS3Q0C5qD9oT4wx5tpx1Js0sTJ6k=', 'J9FpEqoL4ceIqn9W/asRnw==', 'img/storage/profile/Xylo.png'),
-('Lorin', 'For copyright reasons, I am not Grogu', 'p+8+HWS1eJIz6oB3/sXSZkTt3HNFLEtMuoIC1F+u7+M=', 'DSy9TX9rEBSIwOc7ZEW7+g==', 'img/storage/profile/Lorin.png'),
-('Zara', 'Humanoid robot much like the rest', 'bPTzvvXgTRc0c/z9d4psEtB5rvJy9K6MpACvvOGC7a4=', '/WN3gWwpGs386ZqABD+2NA==', 'img/storage/profile/Zara.png'),
-('Mystar', 'Xylo and I are not the same!', 'YDVdIu2IFASgsEC603ZQxnojmcKioXuiA+da0EAduu8=', 'O4F+CjFrKkyx8spx7X7W8A==', 'img/storage/profile/Mystar.png'),
-('TestUser', 'Just a test account', 'AeXYU3HuDvGJRZZe+nzxbXfr+tPJlqXspzVybTj4OP0=', 'b3fZXcO6eRsDJx6uHKP3ZA==', 'img/logos/DACS.png');
+('Xylo', 'Fierce warrior, not solo', 'LOv+x8cXMRvMmyeGubm57HryWFvmob8o/I+YSONsQVs=', 'Yn4cyFbdxc2XOg6N+7n8DQ==', 'img/storage/profile/Xylo.png'),
+('Lorin', 'For copyright reasons, I am not Grogu', 'zOe/Jypk4qreW2wJhlCE9/yB1k1AR1v+QX7nvEV8omg=', 'zlzBvtyYbU4wjNfCWXB3fA==', 'img/storage/profile/Lorin.png'),
+('Zara', 'Humanoid robot much like the rest', '+qBmC/skk8At2sZfaainaOPgs5KM285rta2Q9drBf6U=', 'B+WSzhrK4YZkx/VtbnwNyQ==', 'img/storage/profile/Zara.png'),
+('Mystar', 'Xylo and I are not the same!', 'rXY2xezlJnGykzRY8wqUINu66/NuSCl4DVLHdkpAkoU=', 'W1+VuddhDZjwJhjWljP9zg==', 'img/storage/profile/Mystar.png');
 
 -- Insert test pictures
 INSERT INTO Pictures (imageId, username, imagePath, caption, timestamp) VALUES
